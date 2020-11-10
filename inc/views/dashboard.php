@@ -5,6 +5,7 @@
         <a class='login' href='<?= $authUrl ?>'>Connect to Google</a>
     </div>
 <?php elseif ($_SERVER['REQUEST_METHOD'] == 'POST') : ?>
+    <h3>To upload the order, enter his number</h3>
     <form method="POST">
         <input type="number" name="order_num">
         <input class="button action" type="submit" value="Upload to GDrive" class="Send" />
