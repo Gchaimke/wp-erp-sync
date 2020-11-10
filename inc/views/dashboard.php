@@ -2,7 +2,7 @@
 
 <?php if (isset($authUrl)) : ?>
     <div class="request">
-        <a class='login' href='<?= $authUrl ?>'>להתחבר לגוגל</a>
+        <a class='login' href='<?= $authUrl ?>'>Connect to Google</a>
     </div>
 <?php elseif ($_SERVER['REQUEST_METHOD'] == 'POST') : ?>
     <form method="POST">
