@@ -8,18 +8,26 @@ function wes_dashboard()
 {
     $google_helper = new Google_Helper();
     $client = $google_helper->get_client();
-    $google_helper->register_session();
+
+    if (!empty($_SESSION['upload_token'])) {
+        $client->setAccessToken($_SESSION['upload_token']);
+        if ($client->isAccessTokenExpired()) {
+            unset($_SESSION['upload_token']);
+        }
+    } else {
+        if (!$google_helper->get_token_from_refresh()) {
+            $authUrl = $client->createAuthUrl();
+        }
+    }
 
     if ($_GET['code'] != '') {
         $google_helper->generate_token($_GET['code']);
     }
-    // set the access token as part of the client
-    if (empty($_SESSION['upload_token'])) {
-        $authUrl = $google_helper->get_token_from_refresh();
-    }
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $client->getAccessToken()) {
         $result = $google_helper->upload_file($_POST['order_num'], $google_helper->get_service());
     }
+
     if ($_GET['sync'] == 'true') {
         $google_helper->get_sync_files($google_helper->get_service());
     }

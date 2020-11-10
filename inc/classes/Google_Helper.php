@@ -15,8 +15,10 @@ class Google_Helper
   public $tokenPath;
   public function __construct()
   {
-    $this->tokenPath = GDATA_FOLDER . 'token.json';
     $this->oauth_credentials = $this->getOAuthCredentialsFile();
+    $this->check_credentials();
+    $this->register_session();
+    $this->tokenPath = GDATA_FOLDER . 'token.json';
     $this->redirect_uri = 'http://gchaim.com/wp-admin/admin.php?page=dashboard';
     $this->client = new Google_Client();
     $this->client->setAuthConfig($this->oauth_credentials);
@@ -26,10 +28,7 @@ class Google_Helper
     if (!file_exists(GDATA_FOLDER . 'refresh-token.json')) {
       $this->client->setPrompt('select_account consent');
     }
-
     $this->service = new Google_Service_Drive($this->client);
-    //wp hook
-    add_action('init', [$this, 'register_session']);
   }
 
   function get_client()
@@ -47,14 +46,15 @@ class Google_Helper
     if (!session_id())
       session_start();
   }
+
   function check_credentials()
   {
     if (!$this->oauth_credentials) {
       echo  $this->missingOAuth2CredentialsWarning();
+      die();
     }
     return;
   }
-
 
   function missingOAuth2CredentialsWarning()
   {
@@ -73,7 +73,6 @@ class Google_Helper
 
   function getOAuthCredentialsFile()
   {
-    // oauth2 creds
     $oauth_creds = GDATA_FOLDER . 'oauth-credentials.json';
     if (file_exists($oauth_creds)) {
       return $oauth_creds;
@@ -81,31 +80,31 @@ class Google_Helper
     return false;
   }
 
-  function generate_token($code)
+  function generate_token($code = '')
   {
-    if (file_exists(GDATA_FOLDER . 'refresh-token.json')) {
-      $token = json_decode(file_get_contents(GDATA_FOLDER . 'refresh-token.json'), true);
-      $this->client->setAccessToken($token);
-      $this->client->fetchAccessTokenWithRefreshToken($this->client->getRefreshToken());
-    } else {
+    if ($code != '') {
       $token = $this->client->fetchAccessTokenWithAuthCode($code);
       $this->client->setAccessToken($token);
+      $_SESSION['upload_token'] = $token;
+      $google_token = $_SESSION['upload_token'];
+      if ($google_token['refresh_token'] != null) {
+        file_put_contents(GDATA_FOLDER . 'refresh-token.json', json_encode($google_token));
+      }
+      $this->redirect_to_url($this->redirect_uri);
+      return 'token from code';
+    } else {
+      $this->get_token_from_refresh();
+      return 'token from refresh';
     }
-    // store in the session also
-    $_SESSION['upload_token'] = $token;
-    if (!file_exists(dirname($this->tokenPath))) {
-      mkdir(dirname($this->tokenPath), 0700, true);
-    }
-    file_put_contents($this->tokenPath, json_encode($this->client->getAccessToken()));
-    $google_token = $_SESSION['upload_token'];
-    if ($google_token['refresh_token'] != null) {
-      file_put_contents(GDATA_FOLDER . 'refresh-token.json', json_encode($google_token));
-    }
+  }
+
+  function redirect_to_url($url)
+  {
     echo '
             <script>
             setTimeout(function () {
-                window.location.href= "' . $this->redirect_uri . '";
-            }, 10000);
+                window.location.href= "' . $url . '";
+            }, 1000);
             </script>       
             ';
   }
@@ -113,15 +112,24 @@ class Google_Helper
   function get_token_from_refresh()
   {
     if (file_exists(GDATA_FOLDER . 'refresh-token.json')) {
-      $accessToken = json_decode(file_get_contents(GDATA_FOLDER . 'refresh-token.json'), true);
+      $refreshToken = json_decode(file_get_contents(GDATA_FOLDER . 'refresh-token.json'), true);
+      $this->client->setAccessToken($refreshToken);
+      $refreshTokenSaved = $this->client->getRefreshToken();
+      // update access token
+      $this->client->fetchAccessTokenWithRefreshToken($refreshTokenSaved);
+      // pass access token to some variable
+      $accessTokenUpdated = $this->client->getAccessToken();
+      // append refresh token
+      $accessTokenUpdated['refresh_token'] = $refreshTokenSaved;
+      //Set the new acces token
+      $accessToken = $refreshTokenSaved;
       $this->client->setAccessToken($accessToken);
-      $this->client->fetchAccessTokenWithRefreshToken($this->client->getRefreshToken());
-    } else if($this->getOAuthCredentialsFile()){
-      return $this->client->createAuthUrl();
-    }else{
-      $this->check_credentials();
-      wp_die();
+      // save to file
+      file_put_contents($this->tokenPath, json_encode($accessTokenUpdated));
+      $_SESSION['upload_token'] = $accessTokenUpdated;
+      return true;
     }
+    return false;
   }
 
   function upload_file($order, $service)
@@ -131,6 +139,7 @@ class Google_Helper
     $file = new Google_Service_Drive_DriveFile();
     $file->setDescription('Order Number ' . $order);
     $file->setName(ORDER);
+
     if (file_exists($folder . ORDER)) {
       $result = $service->files->create(
         $file,
@@ -161,7 +170,7 @@ class Google_Helper
       print "<h3>Files in Sync folder:</h3>";
       foreach ($results->getFiles() as $file) {
         printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a></br>", $file->getId(), $file->getName());
-        $outHandle = fopen(ERP_DATA_FOLDER."sync/".$file->getName(), "w+");
+        $outHandle = fopen(ERP_DATA_FOLDER . "sync/" . $file->getName(), "w+");
         $content = $service->files->get($file->getId(), array('alt' => 'media'));
         while (!$content->getBody()->eof()) {
           fwrite($outHandle, $content->getBody()->read(1024));
