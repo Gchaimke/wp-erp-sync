@@ -91,10 +91,8 @@ class Google_Helper
         file_put_contents(GDATA_FOLDER . 'refresh-token.json', json_encode($google_token));
       }
       $this->redirect_to_url($this->redirect_uri);
-      return 'token from code';
     } else {
       $this->get_token_from_refresh();
-      return 'token from refresh';
     }
   }
 
