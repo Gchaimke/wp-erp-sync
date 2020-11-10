@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <Product>
+        <ProductCode>ZZ2NA1404000</ProductCode>
+        <ProductName>אום מצ' D-934 M4-0.7</ProductName>
+        <Pricelist1>10.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>490.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>ZZ2OD3404000</ProductCode>
+        <ProductName>דיסקית קפיצית מצ' D127B M4</ProductName>
+        <Pricelist1>20.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>500.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>EDIFREIGHT</ProductCode>
+        <ProductName>הובלה EDI</ProductName>
+        <Pricelist1>25.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>RO-FREIGHT</ProductCode>
+        <ProductName>הבולה ROSTRA</ProductName>
+        <Pricelist1>33.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>ZZ2RJ45-CUST-A-ELAN</ProductCode>
+        <ProductName>CUSTOMER CABLE A RJ 45 FOR ELAN</ProductName>
+        <Pricelist1>100.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>ZZ2RJ45-CUST-B-ELAN</ProductCode>
+        <ProductName>CUSTOMER CABLE B RJ 45 FOR ELAN</ProductName>
+        <Pricelist1>150.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>ZZ2VGA-EXTENDER-ELAN</ProductCode>
+        <ProductName>VGA EXTENDER CABLE FOR ELAN</ProductName>
+        <Pricelist1>5.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>ZZ2MINICOM-LAN-ELAN</ProductCode>
+        <ProductName>MINICOM LAN CABLE FOR ELAN</ProductName>
+        <Pricelist1>0.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+    <Product>
+        <ProductCode>ZZ0CABLE-SET-2-ELAN2</ProductCode>
+        <ProductName>צמת מתחים עבור CASE-ELAN2.0</ProductName>
+        <Pricelist1>0.0000</Pricelist1>
+        <Pricelist2>0.0000</Pricelist2>
+        <DiscountPrice>0.0000</DiscountPrice>
+        <CustomerDiscountFromDate/>
+        <CustomerDiscountToDate/>
+        <StockBalance>0.0000</StockBalance>
+    </Product>
+</root>

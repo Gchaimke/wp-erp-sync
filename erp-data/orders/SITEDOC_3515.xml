@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <Documents>
+        <DocumentDate>09/09/2020</DocumentDate>
+        <DocumentType>17</DocumentType>
+        <DocumentSeries>1</DocumentSeries>
+        <DocumentDesign>0</DocumentDesign>
+        <DocumentNumber>3515</DocumentNumber>
+        <SellToCustomerNo>30378</SellToCustomerNo>
+        <SellToCustomerName>אופטיקה עמוקה (א.ע.) בע"מ</SellToCustomerName>
+        <CustomerStreetName>ברקת 9</CustomerStreetName>
+        <CustomerStreetNameExt/>
+        <CustomerHouseNo/>
+        <CustomerCity>פתח תקווה</CustomerCity>
+        <CustomerZipcode>4951777</CustomerZipcode>
+        <Phone1>035091511</Phone1>
+        <DeliveryStreetName/>
+        <DeliveryStreetNameExt/>
+        <DeliveryHouseNo/>
+        <DeliveryCity/>
+        <DeliveryZipcode/>
+        <Phone2>0543291028</Phone2>
+        <CustomerOrderNo/>
+        <CompanyNumber/>
+        <DueDate/>
+        <DeliveryDate>09/09/2020</DeliveryDate>
+        <DeliveryType>2</DeliveryType>
+        <DocumentRem>עבור: עדנה פלג ישראל</DocumentRem>
+        <DocumentComment1/>
+        <DocumentComment2>office@deepoptics.com</DocumentComment2>
+        <DocumentPaid>T</DocumentPaid>
+        <BankAccount>1301</BankAccount>
+        <ReceiptAmount>854.32</ReceiptAmount>
+        <TotalLines>730.19</TotalLines>
+        <SalesDocumentTotal>854.32</SalesDocumentTotal>
+        <DocumentLines>
+            <SalesLine>
+                <ProductCode>TSYPL1006-AR-10S</ProductCode>
+                <AdditionalProductCode/>
+                <Quantity>2</Quantity>
+                <UnitPrice>348.00</UnitPrice>
+                <PctLineDiscount>0</PctLineDiscount>
+                <TotalLine>696.00</TotalLine>
+                <LineComment/>
+            </SalesLine>
+            <SalesLine>
+                <ProductCode>TRANSPORT</ProductCode>
+                <AdditionalProductCode/>
+                <Quantity>1</Quantity>
+                <UnitPrice>34.19</UnitPrice>
+                <PctLineDiscount>0</PctLineDiscount>
+                <TotalLine>34.19</TotalLine>
+                <LineComment/>
+            </SalesLine>
+        </DocumentLines>
+    </Documents>
+</root>
