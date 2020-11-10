@@ -116,8 +116,11 @@ class Google_Helper
       $accessToken = json_decode(file_get_contents(GDATA_FOLDER . 'refresh-token.json'), true);
       $this->client->setAccessToken($accessToken);
       $this->client->fetchAccessTokenWithRefreshToken($this->client->getRefreshToken());
-    } else {
+    } else if($this->getOAuthCredentialsFile()){
       return $this->client->createAuthUrl();
+    }else{
+      $this->check_credentials();
+      wp_die();
     }
   }
 
