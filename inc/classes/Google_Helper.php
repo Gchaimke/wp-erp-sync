@@ -143,7 +143,7 @@ class Google_Helper
     }
   }
 
-  function show_files($service)
+  function get_sync_files($service)
   {
     $folderId = '1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
     $optParams = array(
@@ -158,7 +158,14 @@ class Google_Helper
       print "<h3>Files in Sync folder:</h3>";
       foreach ($results->getFiles() as $file) {
         printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a></br>", $file->getId(), $file->getName());
+        $outHandle = fopen(ERP_DATA_FOLDER."sync/".$file->getName(), "w+");
+        $content = $service->files->get($file->getId(), array('alt' => 'media'));
+        while (!$content->getBody()->eof()) {
+          fwrite($outHandle, $content->getBody()->read(1024));
+        }
+        fclose($outHandle);
       }
+      echo "Download files complate.\n";
     }
   }
 }

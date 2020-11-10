@@ -17,9 +17,11 @@ function wes_dashboard()
     if (empty($_SESSION['upload_token'])) {
         $authUrl = $google_helper->get_token_from_refresh();
     }
-
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $client->getAccessToken()) {
         $result = $google_helper->upload_file($_POST['order_num'], $google_helper->get_service());
+    }
+    if ($_GET['sync'] == 'true') {
+        $google_helper->get_sync_files($google_helper->get_service());
     }
     include 'dashboard.php';
 }
