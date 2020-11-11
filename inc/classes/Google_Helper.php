@@ -127,11 +127,13 @@ class Google_Helper
       $_SESSION['upload_token'] = $accessTokenUpdated;
       return true;
     }
+    Logger::log_message('refresh token not exists', 1);
     return false;
   }
 
-  function upload_file($order, $service)
+  function upload_file($order)
   {
+    $msg = '';
     $folder = ERP_DATA_FOLDER . 'orders/';
     DEFINE("ORDER", "SITEDOC_$order.xml");
     $file = new Google_Service_Drive_DriveFile();
@@ -139,7 +141,7 @@ class Google_Helper
     $file->setName(ORDER);
 
     if (file_exists($folder . ORDER)) {
-      $result = $service->files->create(
+      $result = $this->get_service()->files->create(
         $file,
         array(
           'data' => file_get_contents($folder . ORDER),
@@ -147,13 +149,17 @@ class Google_Helper
           'uploadType' => 'media'
         )
       );
+      $msg = ORDER . ' file uploaded';
+      Logger::log_message($msg);
       return $result;
     } else {
-      return 'File ' . ORDER . ' not exists!';
+      $msg = ORDER . ' file not exists!';
+      Logger::log_message($msg, 1);
+      return $msg;
     }
   }
 
-  function get_sync_files($service)
+  function get_sync_files()
   {
     $folderId = '1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
     $optParams = array(
@@ -161,21 +167,27 @@ class Google_Helper
       'fields' => 'nextPageToken, files(id, name)',
       'q' => "'" . $folderId . "' in parents"
     );
-    $results = $service->files->listFiles($optParams);
-    if (count($results->getFiles()) == 0) {
-      print "<h4>No files found in your Sync folder.</h4>";
-    } else {
-      print "<h3>Files in Sync folder:</h3>";
-      foreach ($results->getFiles() as $file) {
-        printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a></br>", $file->getId(), $file->getName());
-        $outHandle = fopen(ERP_DATA_FOLDER . "sync/" . $file->getName(), "w+");
-        $content = $service->files->get($file->getId(), array('alt' => 'media'));
-        while (!$content->getBody()->eof()) {
-          fwrite($outHandle, $content->getBody()->read(1024));
+    try {
+      $results =  $this->service->files->listFiles($optParams);
+      if (count($results->getFiles()) == 0) {
+        print "<h4>No files found in your Sync folder.</h4>";
+      } else {
+        print "<h3>Files in Sync folder:</h3>";
+        foreach ($results->getFiles() as $file) {
+          printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a></br>", $file->getId(), $file->getName());
+          $outHandle = fopen(ERP_DATA_FOLDER . "sync/" . $file->getName(), "w+");
+          $content =  $this->service->files->get($file->getId(), array('alt' => 'media'));
+          while (!$content->getBody()->eof()) {
+            fwrite($outHandle, $content->getBody()->read(1024));
+          }
+          fclose($outHandle);
+          Logger::log_message($file->getName().' Synced!');
         }
-        fclose($outHandle);
+        Logger::log_message('Sync files complate');
+        return;
       }
-      echo "Download files complate.\n";
+    } catch (\Throwable $th) {
+      Logger::log_message('Sync files Error, folder not exists!', 1);
     }
   }
 }

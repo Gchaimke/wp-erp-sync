@@ -26,11 +26,12 @@ use WpErpSync\Plugin;
 use WpErpSync\Product;
 use WpErpSync\Order;
 
+
 // instantiate classes
 $displayDate = new Shortcodes\Today();
 $plugin    = new Plugin();
 $product = new Product();
-$order - new Order();
+$order = new Order();
 //register all shortcodes
 $plugin->addShortcode($displayDate);
 // initialise the plugin

@@ -25,11 +25,11 @@ function wes_dashboard()
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $client->getAccessToken()) {
-        $result = $google_helper->upload_file($_POST['order_num'], $google_helper->get_service());
+        $result = $google_helper->upload_file($_POST['order_num']);
     }
 
     if ($_GET['sync'] == 'true') {
-        $google_helper->get_sync_files($google_helper->get_service());
+        $google_helper->get_sync_files();
     }
     include 'dashboard.php';
 }
