@@ -71,6 +71,7 @@ class Order
             $product->addChild('LineComment', '');
         }
         $result = $xml->asXML(ERP_DATA_FOLDER . "orders/SITEDOC_".$order_id . '.xml');
+        Logger::log_message('New order created! SITEDOC_'.$order_id.'.xml', 1);
         return $result;
     }
 }
