@@ -96,13 +96,13 @@ class Google_Helper
     }
   }
 
-  function redirect_to_url($url)
+  function redirect_to_url($url,$delay=1000)
   {
     echo '
             <script>
             setTimeout(function () {
                 window.location.href= "' . $url . '";
-            }, 1000);
+            }, '.$delay.');
             </script>       
             ';
   }
@@ -131,7 +131,7 @@ class Google_Helper
     return false;
   }
 
-  function upload_file($order)
+  function upload_file($order,$service)
   {
     $msg = '';
     $folder = ERP_DATA_FOLDER . 'orders/';
@@ -141,7 +141,7 @@ class Google_Helper
     $file->setName(ORDER);
 
     if (file_exists($folder . ORDER)) {
-      $result = $this->get_service()->files->create(
+      $result = $service->files->create(
         $file,
         array(
           'data' => file_get_contents($folder . ORDER),
@@ -159,7 +159,7 @@ class Google_Helper
     }
   }
 
-  function get_sync_files()
+  function get_sync_files($service)
   {
     $folderId = '1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
     $optParams = array(
@@ -168,7 +168,7 @@ class Google_Helper
       'q' => "'" . $folderId . "' in parents"
     );
     try {
-      $results =  $this->service->files->listFiles($optParams);
+      $results =  $service->files->listFiles($optParams);
       if (count($results->getFiles()) == 0) {
         print "<h4>No files found in your Sync folder.</h4>";
       } else {
@@ -176,7 +176,7 @@ class Google_Helper
         foreach ($results->getFiles() as $file) {
           printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a></br>", $file->getId(), $file->getName());
           $outHandle = fopen(ERP_DATA_FOLDER . "sync/" . $file->getName(), "w+");
-          $content =  $this->service->files->get($file->getId(), array('alt' => 'media'));
+          $content =  $service->files->get($file->getId(), array('alt' => 'media'));
           while (!$content->getBody()->eof()) {
             fwrite($outHandle, $content->getBody()->read(1024));
           }
