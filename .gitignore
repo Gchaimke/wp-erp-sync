@@ -1,5 +1,3 @@
-inc/gdrive_data/token.json
-inc/gdrive_data/oauth-credentials.json
-inc/gdrive_data/refresh-token.json
+inc/gdrive_data/*.json
 logs
 erp-data/sync/*.xml
