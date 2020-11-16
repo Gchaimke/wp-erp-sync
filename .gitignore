@@ -2,4 +2,4 @@ inc/gdrive_data/token.json
 inc/gdrive_data/oauth-credentials.json
 inc/gdrive_data/refresh-token.json
 logs
-erp-data/sync/CUSTOMERS.XML
+erp-data/sync/*.xml
