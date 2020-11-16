@@ -25,13 +25,15 @@ use WpErpSync\Shortcodes;
 use WpErpSync\Plugin;
 use WpErpSync\Product;
 use WpErpSync\Order;
-
+use WpErpSync\Cron;
+use WpErpSync\Logger;
 
 // instantiate classes
 $displayDate = new Shortcodes\Today();
 $plugin    = new Plugin();
 $product = new Product();
 $order = new Order();
+$cron = new Cron();
 //register all shortcodes
 $plugin->addShortcode($displayDate);
 // initialise the plugin
@@ -61,3 +63,10 @@ function wes_admin_scripts()
 }
 
 add_action('admin_enqueue_scripts', 'wes_admin_scripts');
+
+register_deactivation_hook( __FILE__, 'wes_deactivate' ); 
+ 
+function wes_deactivate() {
+	Cron::remove_cron('wes_crm_sync_data');
+	Logger::log_message("Plugin CRM deactivated");
+}

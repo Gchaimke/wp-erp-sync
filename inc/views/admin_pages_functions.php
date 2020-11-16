@@ -1,5 +1,6 @@
 <?php
 
+use WpErpSync\Cron;
 use  WpErpSync\ParseXml;
 use WpErpSync\Product;
 use WpErpSync\Google_Helper;
@@ -51,6 +52,7 @@ function wes_products()
 
 function wes_settings()
 {
+    include 'settings.php';
     $google_helper = new Google_Helper();
     $client = $google_helper->get_client();
 
@@ -65,9 +67,13 @@ function wes_settings()
         }
     }
 
-    include 'settings.php';
     if ($_GET['sync'] == 'true') {
         $google_helper->get_sync_files($google_helper->get_service());
     }
 
+    if ($_GET['remove_cron'] != '') {
+        Cron::remove_cron($_GET['remove_cron']);
+        echo $_GET['remove_cron'].' job removed';
+    }
+    Cron::get_all_jobs();
 }

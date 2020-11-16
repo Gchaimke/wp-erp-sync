@@ -1,8 +1,21 @@
-<h2>Settings</h2>
+<h1>Settings</h1>
 
-<?php if (isset($authUrl)) : ?>
+<?php
+
+use WpErpSync\Cron;
+
+if (isset($authUrl)) : ?>
     <div class="request">
         <a class='login' href='<?= $authUrl ?>'>Connect to Google</a>
     </div>
 <?php endif ?>
-<a class="button action Send" href="?page=wesSettings&sync=true" >Sync GDrive now.</a>
+<div>
+    <h3>Google Drive Sync</h3>
+    <a class="button action Send" href="?page=wesSettings&sync=true">Sync GDrive now.</a>
+</div>
+<div>
+    <h3>Cron Data</h3>
+    <h4>Next CRM cron job 
+        <?php echo date('d-m-Y H:i:s', wp_next_scheduled('wes_crm_sync_data')) ?>
+    </h4>
+</div>

@@ -1,4 +1,4 @@
-<h2>Dashboard</h2>
+<h1>Dashboard</h1>
 
 <?php if (isset($authUrl)) : ?>
     <div class="request">
