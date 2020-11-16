@@ -96,13 +96,13 @@ class Google_Helper
     }
   }
 
-  function redirect_to_url($url,$delay=1000)
+  function redirect_to_url($url, $delay = 1000)
   {
     echo '
             <script>
             setTimeout(function () {
                 window.location.href= "' . $url . '";
-            }, '.$delay.');
+            }, ' . $delay . ');
             </script>       
             ';
   }
@@ -131,7 +131,7 @@ class Google_Helper
     return false;
   }
 
-  function upload_file($order,$service)
+  function upload_file($order, $service)
   {
     $msg = '';
     $folder = ERP_DATA_FOLDER . 'orders/';
@@ -164,7 +164,7 @@ class Google_Helper
     $folderId = '1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
     $optParams = array(
       'pageSize' => 10,
-      'fields' => 'nextPageToken, files(id, name)',
+      'fields' => 'nextPageToken, files(id, name, modifiedTime)',
       'q' => "'" . $folderId . "' in parents"
     );
     try {
@@ -174,20 +174,32 @@ class Google_Helper
       } else {
         print "<h3>Files in Sync folder:</h3>";
         foreach ($results->getFiles() as $file) {
-          printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a></br>", $file->getId(), $file->getName());
-          $outHandle = fopen(ERP_DATA_FOLDER . "sync/" . $file->getName(), "w+");
-          $content =  $service->files->get($file->getId(), array('alt' => 'media'));
-          while (!$content->getBody()->eof()) {
-            fwrite($outHandle, $content->getBody()->read(1024));
+          printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a>Last modifed: %s</br>", $file->getId(), $file->getName(), $file->getModifiedTime());
+          $file_name = ERP_DATA_FOLDER . "sync/" . $file->getName();
+          $local_file_modifed =  filemtime($file_name);
+          $server_file_modifed = strtotime($file->getModifiedTime());
+          $time_diferece = $local_file_modifed - $server_file_modifed;
+          if (abs($time_diferece) > 500) {
+            $outHandle = fopen($file_name, "w+");
+            $content =  $service->files->get($file->getId(), array('alt' => 'media'));
+            while (!$content->getBody()->eof()) {
+              fwrite($outHandle, $content->getBody()->read(1024));
+            }
+            fclose($outHandle);
+            Logger::log_message($file->getName() . ' Synced! Last modified Time: ' . $file->getModifiedTime());
+            echo 'file sync success!<br/><br/>';
+          } else {
+            $msg =' last time modification difference less then 10 minutes. No needs to sync.';
+            echo $msg . '<br/><br/>';
+            Logger::log_message( $file->getName() . $msg . ' difference ' . $time_diferece);
           }
-          fclose($outHandle);
-          Logger::log_message($file->getName().' Synced!');
         }
         Logger::log_message('Sync files complate');
         return;
       }
     } catch (\Throwable $th) {
-      Logger::log_message('Sync files Error, folder not exists!', 1);
+      Logger::log_message('Error! ' . $th->getMessage(), 1);
+      echo $th->getMessage();
     }
   }
 }

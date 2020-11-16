@@ -4,6 +4,8 @@ use  WpErpSync\ParseXml;
 use WpErpSync\Product;
 use WpErpSync\Google_Helper;
 
+
+
 function wes_dashboard()
 {
     $google_helper = new Google_Helper();
@@ -25,11 +27,7 @@ function wes_dashboard()
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $client->getAccessToken()) {
-        $result = $google_helper->upload_file($_POST['order_num'],$google_helper->get_service());
-    }
-
-    if ($_GET['sync'] == 'true') {
-        $google_helper->get_sync_files($google_helper->get_service());
+        $result = $google_helper->upload_file($_POST['order_num'], $google_helper->get_service());
     }
     include 'dashboard.php';
 }
@@ -49,4 +47,27 @@ function wes_products()
     }
     $table_data = $product_class->view_products();
     include 'products.php';
+}
+
+function wes_settings()
+{
+    $google_helper = new Google_Helper();
+    $client = $google_helper->get_client();
+
+    if (!empty($_SESSION['upload_token'])) {
+        $client->setAccessToken($_SESSION['upload_token']);
+        if ($client->isAccessTokenExpired()) {
+            unset($_SESSION['upload_token']);
+        }
+    } else {
+        if (!$google_helper->get_token_from_refresh()) {
+            $authUrl = $client->createAuthUrl();
+        }
+    }
+
+    include 'settings.php';
+    if ($_GET['sync'] == 'true') {
+        $google_helper->get_sync_files($google_helper->get_service());
+    }
+
 }

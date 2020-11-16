@@ -1,0 +1,38 @@
+16-11-2020 15:51:25 [error] Sync files Error, folder not exists!
+16-11-2020 15:53:21 [notice] ITEMS.XML Synced!
+16-11-2020 15:53:22 [notice] CUSTOMERS.XML Synced!
+16-11-2020 15:53:22 [notice] Sync files complate
+16-11-2020 16:06:31 [error] Sync files Error, folder not exists!
+16-11-2020 16:08:10 [error] Sync files Error, folder not exists!
+16-11-2020 16:40:19 [notice] CUSTOMERS.XML Synced! Last update was in: 
+16-11-2020 16:40:22 [notice] ITEMS.XML Synced! Last update was in: 
+16-11-2020 16:40:22 [notice] Sync files complate
+16-11-2020 16:41:34 [notice] CUSTOMERS.XML Synced! Last update was in: 
+16-11-2020 16:41:37 [notice] ITEMS.XML Synced! Last update was in: 
+16-11-2020 16:41:37 [notice] Sync files complate
+16-11-2020 16:43:58 [notice] CUSTOMERS.XML Synced! Last modified Time: 2020-11-16T16:41:39.048Z
+16-11-2020 16:44:01 [notice] ITEMS.XML Synced! Last modified Time: 2020-11-16T16:39:51.829Z
+16-11-2020 16:44:01 [notice] Sync files complate
+16-11-2020 17:12:46 [notice] Sync files complate
+16-11-2020 17:13:56 [notice] Sync files complate
+16-11-2020 17:15:11 [notice] Sync files complate
+16-11-2020 17:15:24 [notice] Sync files complate
+16-11-2020 17:16:21 [notice] Sync files complate
+16-11-2020 17:18:04 [notice] Sync files complate
+16-11-2020 17:19:35 [notice] CUSTOMERS.XML Synced! Last modified Time: 2020-11-16T17:15:11.377Z
+16-11-2020 17:19:35 [notice] Sync files complate
+16-11-2020 17:19:42 [notice] Sync files complate
+16-11-2020 17:19:49 [notice] Sync files complate
+16-11-2020 17:19:51 [notice] Sync files complate
+16-11-2020 17:21:13 [notice] 264 File time modification diferents less then 10 minutes. No needs to sync.<br/><br/>
+16-11-2020 17:21:13 [notice] 250 File time modification diferents less then 10 minutes. No needs to sync.<br/><br/>
+16-11-2020 17:21:13 [notice] Sync files complate
+16-11-2020 17:22:52 [notice] The last time modification difference less then 10 minutes. No needs to sync.<br/><br/> difference 264
+16-11-2020 17:22:52 [notice] The last time modification difference less then 10 minutes. No needs to sync.<br/><br/> difference 250
+16-11-2020 17:22:52 [notice] Sync files complate
+16-11-2020 17:24:18 [notice] CUSTOMERS.XML The last time modification difference less then 10 minutes. No needs to sync. difference 264
+16-11-2020 17:24:18 [notice] ITEMS.XML The last time modification difference less then 10 minutes. No needs to sync. difference 250
+16-11-2020 17:24:18 [notice] Sync files complate
+16-11-2020 17:25:05 [notice] CUSTOMERS.XML last time modification difference less then 10 minutes. No needs to sync. difference 264
+16-11-2020 17:25:05 [notice] ITEMS.XML last time modification difference less then 10 minutes. No needs to sync. difference 250
+16-11-2020 17:25:05 [notice] Sync files complate

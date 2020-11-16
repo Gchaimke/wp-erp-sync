@@ -44,6 +44,7 @@ function wes_add_admin_pages()
 	add_menu_page('CRM Dashboard', 'CRM Dashboard', 'edit_pages', 'dashboard', 'wes_dashboard', 'dashicons-businessman', 3);
 	add_submenu_page('dashboard', 'Clients', "CRM Clients", 'edit_pages', 'wesClients', 'wes_clients');
 	add_submenu_page('dashboard', "Products", "CRM Products", 'edit_pages', 'wesProducts', 'wes_products');
+	add_submenu_page('dashboard', "Settings", "Settings", 'edit_pages', 'wesSettings', 'wes_settings');
 }
 
 add_action('admin_menu', 'wes_add_admin_pages');
