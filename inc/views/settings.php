@@ -1,8 +1,5 @@
 <h1>Settings</h1>
-
 <?php
-
-use WpErpSync\Cron;
 
 if (isset($authUrl)) : ?>
     <div class="request">

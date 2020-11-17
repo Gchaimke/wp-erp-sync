@@ -13,6 +13,8 @@ if (!defined('WPINC')) {
 	die;
 }
 $version = '0.1.1';
+//sync timezone with wordpress
+date_default_timezone_set(get_option('timezone_string'));
 define('GDATA_FOLDER', plugin_dir_path(__FILE__) . 'inc/gdrive_data/');
 define('ERP_DATA_FOLDER', plugin_dir_path(__FILE__) . 'erp-data/');
 define('PLUGIN_NAME_VERSION', $version);
@@ -64,9 +66,10 @@ function wes_admin_scripts()
 
 add_action('admin_enqueue_scripts', 'wes_admin_scripts');
 
-register_deactivation_hook( __FILE__, 'wes_deactivate' ); 
- 
-function wes_deactivate() {
+register_deactivation_hook(__FILE__, 'wes_deactivate');
+
+function wes_deactivate()
+{
 	Cron::remove_cron('wes_crm_sync_data');
 	Logger::log_message("Plugin CRM deactivated");
 }
