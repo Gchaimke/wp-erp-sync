@@ -176,20 +176,23 @@ class Google_Helper
         foreach ($results->getFiles() as $file) {
           printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a>Last modifed: %s</br>", $file->getId(), $file->getName(), $file->getModifiedTime());
           $file_name = ERP_DATA_FOLDER . "sync/" . $file->getName();
-          $local_file_modifed =  filemtime($file_name);
+          $local_file_modifed =  NULL;
+          if(file_exists($file_name)){
+            $local_file_modifed =  filemtime($file_name);
+          }
           $server_file_modifed = strtotime($file->getModifiedTime());
-          $time_diferece = $local_file_modifed - $server_file_modifed;
-          if (abs($time_diferece) > 500) {
+          $time_diferece = $server_file_modifed - $local_file_modifed;
+          if ($time_diferece > 500) {
             $outHandle = fopen($file_name, "w+");
             $content =  $service->files->get($file->getId(), array('alt' => 'media'));
             while (!$content->getBody()->eof()) {
               fwrite($outHandle, $content->getBody()->read(1024));
             }
             fclose($outHandle);
-            Logger::log_message($file->getName() . ' Synced! Last modified Time: ' . $file->getModifiedTime());
-            echo 'file sync success!<br/><br/>';
+            Logger::log_message($file->getName() . ' Synced! Last modified Time: ' . $time_diferece);
+            echo 'file sync success!<br/><br/>'.$time_diferece;
           } else {
-            $msg =' last time modification difference less then 10 minutes. No needs to sync.';
+            $msg =' last time modification less then 10 minutes. Not synced.';
             echo $msg . '<br/><br/>';
             Logger::log_message( $file->getName() . $msg . ' difference ' . $time_diferece);
           }
