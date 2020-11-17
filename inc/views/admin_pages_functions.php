@@ -44,7 +44,11 @@ function wes_products()
 {
     $product_class = new Product();
     if (isset($_GET['limit'])) {
-        $product_class->set_products_limit($_GET['limit']);
+        if ($_GET['limit'] == 'no') {
+            $product_class->set_products_limit(count($product_class->products));
+        } else {
+            $product_class->set_products_limit($_GET['limit']);
+        }
     }
     $table_data = $product_class->view_products();
     include 'products.php';
@@ -73,7 +77,7 @@ function wes_settings()
 
     if ($_GET['remove_cron'] != '') {
         Cron::remove_cron($_GET['remove_cron']);
-        echo $_GET['remove_cron'].' job removed';
+        echo $_GET['remove_cron'] . ' job removed';
     }
     Cron::get_all_jobs();
 }

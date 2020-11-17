@@ -1,6 +1,6 @@
 (function ($) {
     'use strict';
-    function my_ajax(action, values='') {
+    function my_ajax(action, values = '', html = false) {
         $.post(ajaxurl, {
             security: settings.nonce,
             action: action,
@@ -8,7 +8,12 @@
         })
             .done(function (res) {
                 console.log(res);
-                $('#admin_message').text(res+" Errors.").fadeIn(1000).delay(3000).fadeOut(1000)
+                if (html) {
+                    $('#admin_message').append(res).fadeIn(1000);
+                } else {
+                    $('#admin_message').text(res + " Errors.").fadeIn(1000).delay(3000).fadeOut(1000);
+                }
+
             })
             .fail(function () {
                 console.log('AJAX failed!');
@@ -36,6 +41,25 @@
 
     $('.update_all_products_button').on('click', function () {
         my_ajax('update_all_products');
+    });
+
+    $('.search_for_product').on('click', function () {
+        $('#admin_message').empty();
+        $('.add_products_from_search').fadeIn(1000);
+        my_ajax('search_for_product', $('#search_product').val(), true);
+    });
+
+    $('.add_products_from_search').on('click', function () {
+        var values = '';
+        $('.search_row').each(function () {
+            $(this).find('td').each(function (i, item) {
+                if (i < 4 && item.innerHTML!='') {
+                    values = values + ',' + item.innerHTML;
+                }
+            });
+            values = values + ';';
+        });
+        my_ajax('add_all_products', values);
     });
 
 

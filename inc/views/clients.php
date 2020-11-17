@@ -13,7 +13,7 @@ foreach ($clients as $client) {
 ?>
 
 <h2><?=$count?> Clients</h2>
-<table>
+<table class="widefat striped">
 <tr>
     <th>number</th>
     <th>name</th>
