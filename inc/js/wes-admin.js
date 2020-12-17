@@ -32,7 +32,6 @@
                 values = values + ',' + item.innerHTML;
             }
         });
-        alert(values);
         my_ajax('add_product', values);
     });
 
@@ -54,7 +53,7 @@
         var values = '';
         $('.search_row').each(function () {
             $(this).find('td').each(function (i, item) {
-                if (i < 4 && item.innerHTML!='') {
+                if (i < 6 && item.innerHTML!='') {
                     values = values + ',' + item.innerHTML;
                 }
             });

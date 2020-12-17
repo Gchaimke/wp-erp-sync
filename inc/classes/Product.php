@@ -122,7 +122,7 @@ class Product
                     <th>add</th></tr>";
 
             foreach ($this->products as $product) {
-                if (stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false) { //stripos($product['name'], $serch_txt) != false || 
+                if ($product['price'] > 0 && (stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false)) {
                     $table_data .= "<tr class='search_row'>
                     <td id='product_num'>{$count}</td>
                     <td id='product_sku'>{$product['SKU']}</td>
@@ -155,10 +155,11 @@ class Product
             foreach ($products_array as $product_data) {
                 $tmp = explode(",", $product_data);
                 $product = array(
-                    'SKU' => $tmp[1],
-                    'name' => $tmp[2],
-                    'price' => $tmp[3],
-                    'stock' => $tmp[4],
+                    'SKU' => $tmp[2],
+                    'name' => $tmp[3],
+                    'price' => $tmp[4],
+                    'wsprice' => $tmp[5],
+                    'stock' => $tmp[6],
                 );
                 array_push($products, $product);
             }
@@ -177,7 +178,7 @@ class Product
                 wp_set_object_terms($post_id, 'simple', 'product_type');
                 update_post_meta($post_id, '_regular_price', intval($product['price'], 10));
                 update_post_meta($post_id, '_price', intval($product['price'], 10));
-                update_post_meta($post_id, 'wholesale_customer_wholesale_price', intval($product['wholesele_price'], 10));
+                update_post_meta($post_id, 'wholesale_customer_wholesale_price', intval($product['wsprice'], 10));
                 update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'yes');
                 update_post_meta($post_id, '_sku', $product['SKU']);
                 update_post_meta($post_id, '_manage_stock', 'yes');
