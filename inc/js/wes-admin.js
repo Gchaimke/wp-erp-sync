@@ -24,6 +24,7 @@
     }
 
     $('.add_product_button').on('click', function () {
+        alert('ok');
         var row = $(this).closest('tr');
         var columns = row.find('td');
         var values = "";
