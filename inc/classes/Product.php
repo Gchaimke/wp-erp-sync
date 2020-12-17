@@ -70,7 +70,7 @@ class Product
                     <td id='product_price'>{$product['price']}</td>
                     <td id='product_wsprice'>{$product['wholesele_price']}</td>
                     <td id='product_stock'>{$product['stock']}</td>
-                    <td><button class='add_product_button button action'>Add</button></td></tr>";
+                    <td><button class='button action'>Add</button></td></tr>";
                 $active++;
             }
             $count++;
@@ -130,7 +130,7 @@ class Product
                     <td id='product_price'>{$product['price']}</td>
                     <td id='product_wsprice'>{$product['wholesele_price']}</td>
                     <td id='product_stock'>{$product['stock']}</td>
-                    <td><button class='add_product_button button action'>Add</button></td></tr>";
+                    <td><button class='button action'>Add</button></td></tr>";
                     $count++;
                 }
             }
