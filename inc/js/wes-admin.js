@@ -23,16 +23,16 @@
             });
     }
 
-    $('.add_product_button').on('click', function () {
-        alert('ok');
+    $('div#wpbody-content').on('click', 'button', function () {
         var row = $(this).closest('tr');
         var columns = row.find('td');
         var values = "";
         $.each(columns, function (i, item) {
-            if (i > 0 && i < 5) {
+            if (i > 0 && i < 6) {
                 values = values + ',' + item.innerHTML;
             }
         });
+        alert(values);
         my_ajax('add_product', values);
     });
 

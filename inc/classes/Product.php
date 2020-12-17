@@ -70,7 +70,7 @@ class Product
                     <td id='product_price'>{$product['price']}</td>
                     <td id='product_wsprice'>{$product['wholesele_price']}</td>
                     <td id='product_stock'>{$product['stock']}</td>
-                    <td class='add_product_button button action'>Add</td></tr>";
+                    <td><button class='add_product_button button action'>Add</button></td></tr>";
                 $active++;
             }
             $count++;
@@ -103,8 +103,7 @@ class Product
         update_post_meta($post_id, '_manage_stock', 'yes');
         update_post_meta($post_id, '_backorders', 'yes');
         update_post_meta($post_id, '_stock', intval($product_data[5], 10));
-
-        echo ($product_data[2] . " added successfuly!");
+        echo ($product_data[1] . " added successfuly!");
     }
 
     function search_for_product()
@@ -114,6 +113,7 @@ class Product
         $count = 0;
         if (strlen($serch_txt) > 2) {
             $table_data .= "<table id='search_result' class='widefat striped'><tr>
+                    <th>ID</th>
                     <th>SKU</th>
                     <th>name</th>
                     <th>price</th>
@@ -124,12 +124,13 @@ class Product
             foreach ($this->products as $product) {
                 if (stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false) { //stripos($product['name'], $serch_txt) != false || 
                     $table_data .= "<tr class='search_row'>
+                    <td id='product_num'>{$count}</td>
                     <td id='product_sku'>{$product['SKU']}</td>
                     <td id='product_name'>{$product['name']}</td>
                     <td id='product_price'>{$product['price']}</td>
                     <td id='product_wsprice'>{$product['wholesele_price']}</td>
                     <td id='product_stock'>{$product['stock']}</td>
-                    <td class='add_product_button button action'>Add</td></tr>";
+                    <td><button class='add_product_button button action'>Add</button></td></tr>";
                     $count++;
                 }
             }
