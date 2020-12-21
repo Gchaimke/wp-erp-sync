@@ -178,8 +178,14 @@ class Product
                 wp_set_object_terms($post_id, 'simple', 'product_type');
                 update_post_meta($post_id, '_regular_price', intval($product['price'], 10));
                 update_post_meta($post_id, '_price', intval($product['price'], 10));
-                update_post_meta($post_id, 'wholesale_customer_wholesale_price', intval($product['wsprice'], 10));
-                update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'yes');
+                $whPrice = intval($product['wsprice'], 10);
+                if ($whPrice > 0) {
+                    update_post_meta($post_id, 'wholesale_customer_wholesale_price',$whPrice);
+                    update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'yes');
+                }else{
+                    update_post_meta($post_id, 'wholesale_customer_wholesale_price',"");
+                    update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'no');
+                }
                 update_post_meta($post_id, '_sku', $product['SKU']);
                 update_post_meta($post_id, '_manage_stock', 'yes');
                 update_post_meta($post_id, '_backorders', 'yes');
@@ -204,12 +210,19 @@ class Product
                 $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $product['SKU']));
                 update_post_meta($product_id, '_regular_price', intval($product['price'], 10));
                 update_post_meta($product_id, '_price', intval($product['price'], 10));
+                $whPrice = intval($product['wholesele_price'], 10);
+                if ($whPrice > 0) {
+                    update_post_meta($product_id, 'wholesale_customer_wholesale_price',$whPrice);
+                    update_post_meta($product_id, 'wholesale_customer_have_wholesale_price', 'yes');
+                }else{
+                    update_post_meta($product_id, 'wholesale_customer_wholesale_price',"");
+                    update_post_meta($product_id, 'wholesale_customer_have_wholesale_price', 'no');
+                }
                 update_post_meta($product_id, '_stock', intval($product['stock'], 10));
+                update_post_meta($product_id, '_stock_status', 'instock');
                 $success++;
             }
             $count++;
-            if ($count > $this->get_products_limit())
-                break;
         }
         echo ($success . ' products updated!');
     }
