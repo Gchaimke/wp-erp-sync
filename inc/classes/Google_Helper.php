@@ -161,23 +161,30 @@ class Google_Helper
 
   function get_sync_files($service)
   {
-    $folderId = '1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
+    $folderId = //'1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
+      $folderName = 'SITEEXP';
     $optParams = array(
       'pageSize' => 10,
-      'fields' => 'nextPageToken, files(id, name, modifiedTime)',
-      'q' => "'" . $folderId . "' in parents"
+      'fields' => 'nextPageToken, files',
+      'q' => "name = '" . $folderName . "' and mimeType = 'application/vnd.google-apps.folder'" //"'" . $folderId . "' in parents"
     );
     try {
-      $results =  $service->files->listFiles($optParams);
-      if (count($results->getFiles()) == 0) {
+      $folder =  $service->files->listFiles($optParams);
+      $optParams = array(
+        'pageSize' => 10,
+        'fields' => 'nextPageToken, files(id, name, modifiedTime)',
+        'q' => "'" . $folder[0]['id'] . "' in parents"
+      );
+      $files = $service->files->listFiles($optParams);
+      if (count($files->getFiles()) == 0) {
         print "<h4>No files found in your Sync folder.</h4>";
       } else {
         print "<h3>Files in Sync folder:</h3>";
-        foreach ($results->getFiles() as $file) {
+        foreach ($files->getFiles() as $file) {
           printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a>Last modifed: %s</br>", $file->getId(), $file->getName(), $file->getModifiedTime());
           $file_name = ERP_DATA_FOLDER . "sync/" . $file->getName();
           $local_file_modifed =  NULL;
-          if(file_exists($file_name)){
+          if (file_exists($file_name)) {
             $local_file_modifed =  filemtime($file_name);
           }
           $server_file_modifed = strtotime($file->getModifiedTime());
@@ -190,11 +197,11 @@ class Google_Helper
             }
             fclose($outHandle);
             Logger::log_message($file->getName() . ' Synced! Last modified Time: ' . $time_diferece);
-            echo 'file sync success!<br/><br/>'.$time_diferece;
+            echo 'file sync success!<br/><br/>' . $time_diferece;
           } else {
-            $msg =' last time modification less then 10 minutes. Not synced.';
+            $msg = ' last time modification less then 10 minutes. Not synced.';
             echo $msg . '<br/><br/>';
-            Logger::log_message( $file->getName() . $msg . ' difference ' . $time_diferece);
+            Logger::log_message($file->getName() . $msg . ' difference ' . $time_diferece);
           }
         }
         Logger::log_message('Sync files complate');
