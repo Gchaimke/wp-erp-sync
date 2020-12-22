@@ -208,7 +208,7 @@ class Google_Helper
         return;
       }
     } catch (\Throwable $th) {
-      Logger::log_message('Error! ' . $th->getMessage(), 1);
+      Logger::log_message($th->getMessage(), 1);
       echo $th->getMessage();
     }
   }
