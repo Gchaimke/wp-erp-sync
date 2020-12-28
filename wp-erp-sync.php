@@ -45,9 +45,9 @@ $plugin->init();
 function wes_add_admin_pages()
 {
 	require_once plugin_dir_path(__FILE__) . 'inc/views/admin_pages_functions.php';
-	add_menu_page('CRM Dashboard', 'CRM Dashboard', 'edit_pages', 'dashboard', 'wes_dashboard', 'dashicons-businessman', 3);
-	add_submenu_page('dashboard', 'Clients', "CRM Clients", 'edit_pages', 'wesClients', 'wes_clients');
-	add_submenu_page('dashboard', "Products", "CRM Products", 'edit_pages', 'wesProducts', 'wes_products');
+	add_menu_page('ERP Dashboard', 'ERP Dashboard', 'edit_pages', 'dashboard', 'wes_dashboard', 'dashicons-businessman', 3);
+	add_submenu_page('dashboard', 'Clients', "Clients", 'edit_pages', 'wesClients', 'wes_clients');
+	add_submenu_page('dashboard', "Products", "Products", 'edit_pages', 'wesProducts', 'wes_products');
 	add_submenu_page('dashboard', "Settings", "Settings", 'edit_pages', 'wesSettings', 'wes_settings');
 }
 
@@ -70,6 +70,53 @@ register_deactivation_hook(__FILE__, 'wes_deactivate');
 
 function wes_deactivate()
 {
-	Cron::remove_cron('wes_crm_sync_data');
-	Logger::log_message("Plugin CRM deactivated");
+	Cron::remove_cron('wes_erp_sync_data');
+	Logger::log_message("Plugin erp deactivated");
+}
+
+//Add ERP number to user profile
+add_action('show_user_profile', 'extra_user_profile_fields');
+add_action('edit_user_profile', 'extra_user_profile_fields');
+
+function extra_user_profile_fields($user)
+{ ?>
+	<h3><?php _e("מספר לקוח ERP", "blank"); ?></h3>
+
+	<table class="form-table">
+		<tr>
+			<th><label for="erp_num"><?php _e("מספר לקוח"); ?></label></th>
+			<td>
+				<input type="text" name="erp_num" id="erp_num" value="<?php echo esc_attr(get_the_author_meta('erp_num', $user->ID)); ?>" class="regular-text" /><br />
+			</td>
+		</tr>
+	</table>
+<?php }
+
+add_action('personal_options_update', 'save_extra_user_profile_fields');
+add_action('edit_user_profile_update', 'save_extra_user_profile_fields');
+
+function save_extra_user_profile_fields($user_id)
+{
+	if (!current_user_can('edit_user', $user_id)) {
+		return false;
+	}
+	update_user_meta($user_id, 'erp_num', $_POST['erp_num']);
+}
+
+add_filter('manage_users_columns', 'wes_add_new_user_column');
+
+function wes_add_new_user_column($columns)
+{
+	$columns['erp_num'] = 'מספר ERP';
+	return $columns;
+}
+
+add_filter('manage_users_custom_column', 'wes_add_new_user_column_content', 10, 3);
+
+function wes_add_new_user_column_content($content, $column, $user_id)
+{
+	if ('erp_num' === $column) {
+		$content = get_the_author_meta('erp_num', $user_id);
+	}
+	return $content;
 }

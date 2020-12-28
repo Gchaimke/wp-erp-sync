@@ -56,9 +56,25 @@ function wes_products()
 
 function wes_settings()
 {
-    include 'settings.php';
+    $required_plugins = array(
+        'woocommerce-gateway-paypal-express-checkout' => 'WC_Gateway_PPEC_Plugin',
+        'woocommerce-wholesale-prices' => 'WooCommerceWholeSalePrices'
+    );
+    
     $google_helper = new Google_Helper();
     $client = $google_helper->get_client();
+
+    $required_plugins_str = '<h4>תוספים שצרכים להיות מותקנים:</h4>';
+    foreach ($required_plugins as $name => $class) {
+        $required_plugins_str .= "<li>";
+        if (class_exists($class)) {
+            $required_plugins_str .= $name . '<span style="color:green;font-weight: 600;"> - פעיל';
+        } else {
+            $plugin_link = "plugin-install.php?tab=plugin-information&plugin={$name}";
+            $required_plugins_str .= "$name<span style='color:red;font-weight: 600;'> - לא פעיל <a class='install-now button' href='$plugin_link' target='_blank'>Install</a>";
+        }
+        $required_plugins_str .= "</li>";
+    }
 
     if (!empty($_SESSION['upload_token'])) {
         $client->setAccessToken($_SESSION['upload_token']);
@@ -80,4 +96,5 @@ function wes_settings()
         echo $_GET['remove_cron'] . ' job removed';
     }
     Cron::get_all_jobs();
+    include 'settings.php';
 }

@@ -13,15 +13,25 @@ class Order
 
     function wes_sync_order($order_id)
     {
-        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>');
         $order_data = wc_get_order($order_id);
+        
+        $erp_num = get_the_author_meta('erp_num',$order_data->get_customer_id());
+        if($erp_num==''){
+            $erp_num = 30378;
+        }
+        $date_paid = $order_data->get_date_paid();
+        $paid = 'F';
+        if($date_paid != NULL){
+            $paid = 'T';
+        }
+        $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>');
         $documents = $xml->addChild('Documents');
         $documents->addChild('DocumentDate', date('d/m/Y'));
         $documents->addChild('DocumentType', 17);
         $documents->addChild('DocumentSeries', 1);
         $documents->addChild('DocumentDesign', 0);
         $documents->addChild('DocumentNumber', $order_data->get_id());
-        $documents->addChild('SellToCustomerNo', $order_data->get_customer_id());
+        $documents->addChild('SellToCustomerNo', $erp_num);
         $documents->addChild('SellToCustomerName', $order_data->get_billing_first_name());
         $documents->addChild('CustomerStreetName', $order_data->get_billing_address_1());
         $documents->addChild('CustomerStreetNameExt', $order_data->get_billing_address_2());
@@ -43,7 +53,7 @@ class Order
         $documents->addChild('DocumentRem', $order_data->get_customer_note());
         $documents->addChild('DocumentComment1', $order_data->get_customer_note());
         $documents->addChild('DocumentComment2', $order_data->get_billing_email());
-        $documents->addChild('DocumentPaid', 'T');
+        $documents->addChild('DocumentPaid', $paid);
         $documents->addChild('BankAccount', '');
         $documents->addChild('ReceiptAmount', $order_data->get_total());
         $documents->addChild('TotalLines', $order_data->get_subtotal());
