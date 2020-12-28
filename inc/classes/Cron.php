@@ -39,7 +39,7 @@ class Cron
                         echo '<td>' . $jkey . '</td>';
                     }
                     echo '<td>' . $data['schedule'] . '</td>';
-                    echo '<td><a href="?page=wesSettings&remove_cron='.$jkey.'">remove</a></td>';
+                    echo '<td><a class="button" href="?page=wesSettings&remove_cron='.$jkey.'">remove</a></td>';
                 }
             }
             echo '</tr>';

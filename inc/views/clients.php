@@ -13,6 +13,13 @@ foreach ($clients as $client) {
         $count++;
     }
 }
+
+$all_users = get_users();
+echo '<ul>';
+foreach ($all_users as $user) {
+    echo '<li><span>' . esc_html($user->user_email) . ' : ' . esc_html($user->id) . '</span></li>';
+}
+echo '</ul>';
 ?>
 
 <h2><?= $count ?> Resellers</h2>

@@ -13,7 +13,7 @@ class ParseXml
         $xml = (new Reader(new Document()))->load($file);
 
         $data = $xml->parse([
-            'products' => ['uses' => 'Product[ProductCode>SKU,ProductName>name,Pricelist1>price,Pricelist2>wholesele_price,StockBalance>stock]'],
+            'products' => ['uses' => 'Product[ProductCode>SKU,ProductName>name,Pricelist1>price,Pricelist2>wholesale_price,StockBalance>stock]'],
         ]);
         return $data;
     }

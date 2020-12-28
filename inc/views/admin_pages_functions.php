@@ -76,6 +76,8 @@ function wes_settings()
         $required_plugins_str .= "</li>";
     }
 
+    include 'settings.php'; //view settings page
+
     if (!empty($_SESSION['upload_token'])) {
         $client->setAccessToken($_SESSION['upload_token']);
         if ($client->isAccessTokenExpired()) {
@@ -93,8 +95,7 @@ function wes_settings()
 
     if ($_GET['remove_cron'] != '') {
         Cron::remove_cron($_GET['remove_cron']);
-        echo $_GET['remove_cron'] . ' job removed';
+        echo '<h4>'.$_GET['remove_cron'] . ' job removed</h4>';
     }
     Cron::get_all_jobs();
-    include 'settings.php';
 }

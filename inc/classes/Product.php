@@ -50,27 +50,12 @@ class Product
 
     public function view_products()
     {
-        $table_data = '';
         $count = 0;
         $active = 0;
-        $table_data .= "<table class='widefat striped'><tr>
-                    <th>ID</th>
-                    <th>SKU</th>
-                    <th>name</th>
-                    <th>price</th>
-                    <th>wholesele price</th>
-                    <th>stock</th>
-                    <th>add</th></tr>";
+        $table_data = "<table class='widefat striped'>" . $this->view_products_table_head();
         foreach ($this->products as $product) {
             if ($product['price'] > 0 && $product['stock'] > 0) {
-                $table_data .= "<tr class='product'>
-                    <td id='product_num'>{$count}</td>
-                    <td id='product_sku'>{$product['SKU']}</td>
-                    <td id='product_name'>{$product['name']}</td>
-                    <td id='product_price'>{$product['price']}</td>
-                    <td id='product_wsprice'>{$product['wholesele_price']}</td>
-                    <td id='product_stock'>{$product['stock']}</td>
-                    <td><button class='button action'>Add</button></td></tr>";
+                $table_data .= $this->view_product_line($product, $count);
                 $active++;
             }
             $count++;
@@ -83,54 +68,16 @@ class Product
         return $table_data;
     }
 
-    public function add_product()
-    {
-        check_ajax_referer('wes', 'security');
-        $product_data = explode(",", $_POST['data']);
-        $product = array(
-            'post_title' => $product_data[2],
-            'post_content' => '',
-            'post_status' => 'draft',
-            'post_type' => 'product'
-        );
-        $post_id = wp_insert_post($product);
-        wp_set_object_terms($post_id, 'simple', 'product_type');
-        update_post_meta($post_id, '_regular_price', intval($product_data[3], 10));
-        update_post_meta($post_id, '_price', intval($product_data[3], 10));
-        update_post_meta($post_id, 'wholesale_customer_wholesale_price', intval($product_data[4], 10));
-        update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'yes');
-        update_post_meta($post_id, '_sku', $product_data[1]);
-        update_post_meta($post_id, '_manage_stock', 'yes');
-        update_post_meta($post_id, '_backorders', 'yes');
-        update_post_meta($post_id, '_stock', intval($product_data[5], 10));
-        echo ($product_data[1] . " added successfuly!");
-    }
-
     function search_for_product()
     {
         $serch_txt = $_POST['data'] . '';
         $table_data = '';
         $count = 0;
         if (strlen($serch_txt) > 2) {
-            $table_data .= "<table id='search_result' class='widefat striped'><tr>
-                    <th>ID</th>
-                    <th>SKU</th>
-                    <th>name</th>
-                    <th>price</th>
-                    <th>wholesele price</th>
-                    <th>stock</th>
-                    <th>add</th></tr>";
-
+            $table_data .= "<table id='search_table' class='widefat striped'>" . $this->view_products_table_head();
             foreach ($this->products as $product) {
                 if ($product['price'] > 0 && (stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false)) {
-                    $table_data .= "<tr class='search_row'>
-                    <td id='product_num'>{$count}</td>
-                    <td id='product_sku'>{$product['SKU']}</td>
-                    <td id='product_name'>{$product['name']}</td>
-                    <td id='product_price'>{$product['price']}</td>
-                    <td id='product_wsprice'>{$product['wholesele_price']}</td>
-                    <td id='product_stock'>{$product['stock']}</td>
-                    <td><button class='button action'>Add</button></td></tr>";
+                    $table_data .= $this->view_product_line($product, $count);
                     $count++;
                 }
             }
@@ -145,77 +92,115 @@ class Product
         echo $table_data;
     }
 
+    function view_products_table_head()
+    {
+        return "<tr><th>ID</th>
+                <th>SKU</th>
+                <th>name</th>
+                <th>price</th>
+                <th>wholesale price</th>
+                <th>stock</th>
+                <th>add</th></tr>";
+    }
+
+    function view_product_line($product, $count)
+    {
+        $product_line = "<tr class='product'>
+        <td data-column='num'>{$count}</td>
+        <td data-column='SKU'>{$product['SKU']}</td>
+        <td data-column='name'>{$product['name']}</td>
+        <td data-column='price'>{$product['price']}</td>
+        <td data-column='wholesale_price'>{$product['wholesale_price']}</td>
+        <td data-column='stock'>{$product['stock']}</td>
+        <td><button class='button action'>Add</button></td></tr>";
+        return $product_line;
+    }
+
+    function get_new_product_array($product_name)
+    {
+        return array(
+            'post_title' => $product_name,
+            'post_content' => '',
+            'post_status' => 'draft',
+            'post_type' => 'product'
+        );
+    }
+
+    function add_product($product_data = '')
+    {
+        check_ajax_referer('wes', 'security');
+        if ($product_data == '') {
+            $product_data = $_POST['data'];
+        }
+        return $this->add_one_product($product_data);
+    }
+
+    function add_one_product($product_data){
+        $all_sku = $this->get_existings_products_skus();
+        if (!in_array($product_data['SKU'], $all_sku)) {
+            $product = $this->get_new_product_array($product_data['SKU']);
+            $post_id = wp_insert_post($product);
+            wp_set_object_terms($post_id, 'simple', 'product_type');
+            update_post_meta($post_id, '_regular_price', intval($product_data['price'], 10));
+            update_post_meta($post_id, '_price', intval($product_data['price'], 10));
+            $whPrice = intval($product_data['wholesale_price'], 10);
+            if ($whPrice > 0) {
+                update_post_meta($post_id, 'wholesale_customer_wholesale_price', $whPrice);
+                update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'yes');
+            } else {
+                update_post_meta($post_id, 'wholesale_customer_wholesale_price', "");
+                update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'no');
+            }
+            update_post_meta($post_id, '_sku', $product_data['SKU']);
+            update_post_meta($post_id, '_manage_stock', 'yes');
+            update_post_meta($post_id, '_backorders', 'yes');
+            update_post_meta($post_id, '_stock', intval($product_data['stock'], 10));
+            echo ($product_data['SKU'] . " added successfuly!");
+        } else {
+            echo 'Product with SKU:' . $product_data['SKU'] . ' Exists!';
+        }
+        return true;
+    }
+
     function add_all_products()
     {
         $count = 0;
         $success = 0;
         $products = array();
         if ($_POST['data']) {
-            $products_array = explode(";", $_POST['data']);
-            foreach ($products_array as $product_data) {
-                $tmp = explode(",", $product_data);
-                $product = array(
-                    'SKU' => $tmp[2],
-                    'name' => $tmp[3],
-                    'price' => $tmp[4],
-                    'wsprice' => $tmp[5],
-                    'stock' => $tmp[6],
-                );
-                array_push($products, $product);
-            }
+            $products = $_POST['data'];
         } else {
             $products = $this->products;
         }
         foreach ($products as $product) {
-            if ($product['price'] > 0 && $product['stock'] > 0) {
-                $product_array = array(
-                    'post_title' => $product['name'],
-                    'post_content' => '',
-                    'post_status' => 'draft',
-                    'post_type' => 'product'
-                );
-                $post_id = wp_insert_post($product_array);
-                wp_set_object_terms($post_id, 'simple', 'product_type');
-                update_post_meta($post_id, '_regular_price', intval($product['price'], 10));
-                update_post_meta($post_id, '_price', intval($product['price'], 10));
-                $whPrice = intval($product['wsprice'], 10);
-                if ($whPrice > 0) {
-                    update_post_meta($post_id, 'wholesale_customer_wholesale_price',$whPrice);
-                    update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'yes');
-                }else{
-                    update_post_meta($post_id, 'wholesale_customer_wholesale_price',"");
-                    update_post_meta($post_id, 'wholesale_customer_have_wholesale_price', 'no');
-                }
-                update_post_meta($post_id, '_sku', $product['SKU']);
-                update_post_meta($post_id, '_manage_stock', 'yes');
-                update_post_meta($post_id, '_backorders', 'yes');
-                update_post_meta($post_id, '_stock', intval($product['stock'], 10));
+            if ($product['price'] > 0 && $product['stock'] > 0 ) {
+                $this->add_one_product($product);
                 $success++;
             }
             $count++;
             if ($count > $this->get_products_limit())
                 break;
         }
-        echo ($success . ' new products added!');
+        echo (" - ".$success . ' new products added!');
     }
-
 
     function update_all_products()
     {
         global $wpdb;
         $count = 0;
         $success = 0;
+        $all_sku = $this->get_existings_products_skus();
         foreach ($this->products as $product) {
-            if ($product['price'] > 0 && $product['stock'] > 0) {
+            if ($product['price'] > 0 && $product['stock'] > 0 && in_array($product['SKU'], $all_sku)) {
                 $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $product['SKU']));
                 update_post_meta($product_id, '_regular_price', intval($product['price'], 10));
                 update_post_meta($product_id, '_price', intval($product['price'], 10));
-                $whPrice = intval($product['wholesele_price'], 10);
+                $whPrice = intval($product['wholesale_price'], 10);
                 if ($whPrice > 0) {
-                    update_post_meta($product_id, 'wholesale_customer_wholesale_price',$whPrice);
+                    update_post_meta($product_id, 'wholesale_customer_wholesale_price', $whPrice);
                     update_post_meta($product_id, 'wholesale_customer_have_wholesale_price', 'yes');
-                }else{
-                    update_post_meta($product_id, 'wholesale_customer_wholesale_price',"");
+                } else {
+                    update_post_meta($product_id, 'wholesale_customer_wholesale_price', "");
                     update_post_meta($product_id, 'wholesale_customer_have_wholesale_price', 'no');
                 }
                 update_post_meta($product_id, '_stock', intval($product['stock'], 10));
@@ -225,5 +210,22 @@ class Product
             $count++;
         }
         echo ($success . ' products updated!');
+    }
+
+    function get_existings_products_skus()
+    {
+        $all_sku = array();
+        $products_ids = get_posts(array(
+            'numberposts' => -1,
+            'post_type' => 'product',
+            'post_status' => 'any',
+            'fields' => 'ids',
+
+        ));
+        foreach ($products_ids as $product_id) {
+            $product = wc_get_product($product_id);
+            array_push($all_sku, $product->get_sku());
+        }
+        return $all_sku;
     }
 }
