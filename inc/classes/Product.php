@@ -209,7 +209,9 @@ class Product
             }
             $count++;
         }
-        echo (' - '.$success . ' products updated!');
+        $msg = ' - '.$success . ' products updated!';
+        echo ($msg);
+        Logger::log_message($msg);
     }
 
     function get_existings_products_skus()

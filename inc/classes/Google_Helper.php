@@ -204,11 +204,11 @@ class Google_Helper
             Logger::log_message($file->getName() . $msg . ' difference ' . $time_diferece);
           }
         }
-        Logger::log_message('Sync files complate');
+        Logger::log_message('Sync files complete');
         return;
       }
     } catch (\Throwable $th) {
-      Logger::log_message($th->getMessage(), 1);
+      Logger::log_message(json_encode($th->getMessage()) , 1);
       echo $th->getMessage();
     }
   }

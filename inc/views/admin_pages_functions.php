@@ -61,9 +61,6 @@ function wes_settings()
         'woocommerce-wholesale-prices' => 'WooCommerceWholeSalePrices'
     );
     
-    $google_helper = new Google_Helper();
-    $client = $google_helper->get_client();
-
     $required_plugins_str = '<h4>תוספים שצרכים להיות מותקנים:</h4>';
     foreach ($required_plugins as $name => $class) {
         $required_plugins_str .= "<li>";
@@ -78,6 +75,8 @@ function wes_settings()
 
     include 'settings.php'; //view settings page
 
+    $google_helper = new Google_Helper();
+    $client = $google_helper->get_client();
     if (!empty($_SESSION['upload_token'])) {
         $client->setAccessToken($_SESSION['upload_token']);
         if ($client->isAccessTokenExpired()) {
@@ -91,6 +90,10 @@ function wes_settings()
 
     if ($_GET['sync'] == 'true') {
         $google_helper->get_sync_files($google_helper->get_service());
+    }
+
+    if ($_GET['cron'] == 'run') {
+        Cron::wes_cron_exec();
     }
 
     if ($_GET['remove_cron'] != '') {

@@ -12,7 +12,7 @@ class Logger
     static function log_message($msg = '', $kind = 0)
     {
         $logPath = BASE_PATH . 'logs/' . date('d-m-Y') . '.log';
-        $kind_str = '[notice]';
+        $kind_str = '[info]';
         if ($kind == 1) {
             $kind_str = '[error]';
         }

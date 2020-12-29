@@ -20,9 +20,20 @@ class Cron
         wp_unschedule_event($timestamp, $job);
     }
 
-    function wes_cron_exec()
+    public static function wes_cron_exec()
     {
         Logger::log_message('Cron job running.');
+        //Cron Sync data files with Gdrive
+        $google_helper = new Google_Helper();
+        $client = $google_helper->get_client();
+        $token = file_get_contents($google_helper->tokenPath);
+        $tokenObj = json_decode($token);
+        $client->setAccessToken($tokenObj->access_token);
+        $google_helper->get_sync_files($google_helper->get_service());
+        //Cron Update products data
+        $product_class = new Product();
+        $product_class->update_all_products();
+        Logger::log_message('Cron job End.');
     }
 
     public static function get_all_jobs()
@@ -33,13 +44,13 @@ class Cron
             foreach ($job as $jkey => $job_name) {
                 foreach ($job_name as $data) {
                     echo '<tr><td>' . date('d-m-Y H:i:s', $key) . '</td>';
-                    if($jkey=='wes_crm_sync_data'){
+                    if ($jkey == 'wes_crm_sync_data') {
                         echo '<td><b>' . $jkey . '</b></td>';
-                    }else{
+                    } else {
                         echo '<td>' . $jkey . '</td>';
                     }
                     echo '<td>' . $data['schedule'] . '</td>';
-                    echo '<td><a class="button" href="?page=wesSettings&remove_cron='.$jkey.'">remove</a></td>';
+                    echo '<td><a class="button" href="?page=wesSettings&remove_cron=' . $jkey . '">remove</a></td>';
                 }
             }
             echo '</tr>';
