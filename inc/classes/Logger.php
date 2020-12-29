@@ -1,17 +1,16 @@
 <?php
 
 namespace WpErpSync;
-
 class Logger
 {
-
+    public static $log_path = BASE_PATH.'logs/';
     public function __construct()
     {
     }
 
     static function log_message($msg = '', $kind = 0)
     {
-        $logPath = BASE_PATH . 'logs/' . date('d-m-Y') . '.log';
+        $logPath =  self::$log_path . date('d-m-Y') . '.log';
         $kind_str = '[info]';
         if ($kind == 1) {
             $kind_str = '[error]';
@@ -24,4 +23,18 @@ class Logger
         }
         file_put_contents($logPath, $time . ' ' . $kind_str . ' ' . $msg . PHP_EOL, FILE_APPEND);
     }
+
+    static function getFileList()
+	{
+        $dir = self::$log_path;
+		$files = glob($dir."*.log");
+		return $files;
+    }
+    
+    static function getlogContent($log_date)
+	{
+        $dir = self::$log_path;
+		$log = file_get_contents($dir.$log_date.".log");
+		return $log;
+	}
 }

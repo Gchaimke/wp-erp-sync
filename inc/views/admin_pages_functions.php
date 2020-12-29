@@ -4,8 +4,7 @@ use WpErpSync\Cron;
 use  WpErpSync\ParseXml;
 use WpErpSync\Product;
 use WpErpSync\Google_Helper;
-
-
+use WpErpSync\Logger;
 
 function wes_dashboard()
 {
@@ -38,6 +37,21 @@ function wes_clients()
     $data = new ParseXml();
     $clients = $data->get_clients_data()['clients'];
     include 'clients.php';
+}
+
+function wes_logs()
+{
+    $logs = Logger::getFileList();
+    $view_log_list ='<ul>';
+    foreach($logs as $log){
+        $log_name = substr(end(explode('/',$log)),0,-4);
+        $view_log_list .= "<li><a href='admin.php?page=wesLogs&log=$log_name'>$log_name</a></li>";
+    }
+    $view_log_list .='</ul>';
+    if (isset($_GET['log'])){
+        $view_log = Logger::getlogContent($_GET['log']);
+    }
+    include 'logs.php';
 }
 
 function wes_products()
