@@ -10,7 +10,12 @@ class Product
     public function __construct()
     {
         $data = new ParseXml();
-        $this->products = $data->get_products_data()['products'];
+        try {
+            $this->products = $data->get_products_data()['products'];
+        } catch (\Throwable $th) {
+           
+        }
+
         $this->set_products_limit(500);
         add_action('wp_ajax_add_product', [$this, 'add_product']);
         add_action('wp_ajax_search_for_product', [$this, 'search_for_product']);
@@ -40,7 +45,8 @@ class Product
 
     public function get_counted_products()
     {
-        return $this->counted_products;
+        if (isset($this->counted_products))
+            return $this->counted_products;
     }
 
     public function set_counted_products($count)
@@ -53,14 +59,16 @@ class Product
         $count = 0;
         $active = 0;
         $table_data = "<table class='widefat striped'>" . $this->view_products_table_head();
-        foreach ($this->products as $product) {
-            if ($product['price'] > 0 && $product['stock'] > 0) {
-                $table_data .= $this->view_product_line($product, $count);
-                $active++;
+        if (isset($this->products)) {
+            foreach ($this->products as $product) {
+                if ($product['price'] > 0 && $product['stock'] > 0) {
+                    $table_data .= $this->view_product_line($product, $count);
+                    $active++;
+                }
+                $count++;
+                if ($count > $this->get_products_limit())
+                    break;
             }
-            $count++;
-            if ($count > $this->get_products_limit())
-                break;
         }
         $table_data .= "</table>";
         $this->set_active_products($active);
@@ -135,7 +143,8 @@ class Product
         return $this->add_one_product($product_data);
     }
 
-    function add_one_product($product_data){
+    function add_one_product($product_data)
+    {
         $all_sku = $this->get_existings_products_skus();
         if (!in_array($product_data['SKU'], $all_sku)) {
             $product = $this->get_new_product_array($product_data['SKU']);
@@ -173,7 +182,7 @@ class Product
             $products = $this->products;
         }
         foreach ($products as $product) {
-            if ($product['price'] > 0 && $product['stock'] > 0 ) {
+            if ($product['price'] > 0 && $product['stock'] > 0) {
                 $this->add_one_product($product);
                 $success++;
             }
@@ -181,7 +190,7 @@ class Product
             if ($count > $this->get_products_limit())
                 break;
         }
-        echo (" - ".$success . ' new products added!');
+        echo (" - " . $success . ' new products added!');
     }
 
     function update_all_products()
@@ -209,7 +218,7 @@ class Product
             }
             $count++;
         }
-        $msg = ' - '.$success . ' products updated!';
+        $msg = ' - ' . $success . ' products updated!';
         echo ($msg);
         Logger::log_message($msg);
     }

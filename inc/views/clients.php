@@ -19,7 +19,7 @@ if (isset($clients)) {
 $all_users = get_users();
 echo '<ul>';
 foreach ($all_users as $user) {
-    echo '<li><span>' . esc_html($user->user_email) . ' : ' . esc_html($user->id) . '</span></li>';
+    echo '<li><span>' . esc_html($user->user_email) . ' : ' . esc_html($user->ID) . '</span></li>';
 }
 echo '</ul>';
 ?>
