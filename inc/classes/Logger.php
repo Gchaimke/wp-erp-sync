@@ -1,9 +1,10 @@
 <?php
 
 namespace WpErpSync;
+
 class Logger
 {
-    public static $log_path = BASE_PATH.'logs/';
+    public static $log_path = BASE_PATH . 'logs/';
     public function __construct()
     {
     }
@@ -19,22 +20,34 @@ class Logger
 
         if (!file_exists(BASE_PATH . 'logs')) {
             mkdir(BASE_PATH . 'logs', 0700);
-            file_put_contents(BASE_PATH . 'logs/index.php',"<?php // Silence is golden.");
+            file_put_contents(BASE_PATH . 'logs/index.php', "<?php // Silence is golden.");
         }
         file_put_contents($logPath, $time . ' ' . $kind_str . ' ' . $msg . PHP_EOL, FILE_APPEND);
     }
 
     static function getFileList()
-	{
+    {
         $dir = self::$log_path;
-		$files = glob($dir."*.log");
-		return $files;
+        $files = glob($dir . "*.log");
+        return $files;
     }
-    
+
     static function getlogContent($log_date)
-	{
+    {
         $dir = self::$log_path;
-		$log = file_get_contents($dir.$log_date.".log");
-		return $log;
-	}
+        $log = file_get_contents($dir . $log_date . ".log");
+        return $log;
+    }
+
+    static function clearLogs()
+    {
+        $dir = self::$log_path;
+        $files = glob($dir . "*.log");
+        foreach ($files as $file) { // iterate files
+            $log_date = substr(end(explode('/', $file)), 0, -4);
+            if (is_file($file) && $log_date != date('d-m-Y')) {
+                unlink($file); // delete file
+            }
+        }
+    }
 }

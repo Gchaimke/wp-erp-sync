@@ -35,7 +35,12 @@ function wes_dashboard()
 function wes_clients()
 {
     $data = new ParseXml();
-    $clients = $data->get_clients_data()['clients'];
+    try {
+        $clients = $data->get_clients_data()['clients'];
+    } catch (\Throwable $th) {
+        echo 'CLIENT.XML not found';
+    }
+    
     include 'clients.php';
 }
 
@@ -51,20 +56,29 @@ function wes_logs()
     if (isset($_GET['log'])){
         $view_log = Logger::getlogContent($_GET['log']);
     }
+
+    if (isset($_GET['clear_logs'])){
+        $view_log = Logger::clearLogs();
+    }
     include 'logs.php';
 }
 
 function wes_products()
 {
-    $product_class = new Product();
-    if (isset($_GET['limit'])) {
-        if ($_GET['limit'] == 'no') {
-            $product_class->set_products_limit(count($product_class->products));
-        } else {
-            $product_class->set_products_limit($_GET['limit']);
+    try {
+        $product_class = new Product();
+        if (isset($_GET['limit'])) {
+            if ($_GET['limit'] == 'no') {
+                $product_class->set_products_limit(count($product_class->products));
+            } else {
+                $product_class->set_products_limit($_GET['limit']);
+            }
         }
+        $table_data = $product_class->view_products();
+    } catch (\Throwable $th) {
+        echo 'PRODUCTS.XML not found';
     }
-    $table_data = $product_class->view_products();
+   
     include 'products.php';
 }
 
@@ -104,6 +118,10 @@ function wes_settings()
 
     if ($_GET['sync'] == 'true') {
         $google_helper->get_sync_files($google_helper->get_service());
+    }
+
+    if ($_GET['sync'] == 'clear') {
+        $google_helper->clear_sync_folder();
     }
 
     if ($_GET['cron'] == 'run') {

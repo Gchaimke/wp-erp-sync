@@ -33,7 +33,12 @@ use WpErpSync\Logger;
 // instantiate classes
 $displayDate = new Shortcodes\Today();
 $plugin    = new Plugin();
-$product = new Product();
+try {
+	$product = new Product();
+} catch (\Throwable $th) {
+	echo "XML not found";
+}
+
 $order = new Order();
 $cron = new Cron();
 //register all shortcodes

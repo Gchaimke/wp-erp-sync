@@ -13,7 +13,11 @@
     }
 </style>
 <h1>Logs</h1>
-<div id="log_list"><?php print($view_log_list) ?></div>
+
+<div id="log_list">
+    <a class="button" href='admin.php?page=wesLogs&clear_logs=true'>Clear Logs Folder</a>
+    <?php print($view_log_list) ?>
+</div>
 <div id="log_view">
     <pre><?php print($view_log) ?></pre>
 </div>

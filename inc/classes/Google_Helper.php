@@ -208,8 +208,17 @@ class Google_Helper
         return;
       }
     } catch (\Throwable $th) {
-      Logger::log_message(json_encode($th->getMessage()) , 1);
+      Logger::log_message(json_encode($th->getMessage()), 1);
       echo $th->getMessage();
+    }
+  }
+
+  static function clear_sync_folder()
+  {
+    $dir = ERP_DATA_FOLDER . "sync/";
+    $files = glob($dir . "*.XML");
+    foreach ($files as $file) { // iterate files
+        unlink($file); // delete file
     }
   }
 }

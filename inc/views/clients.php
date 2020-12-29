@@ -1,16 +1,18 @@
 <?php
 $count = 0;
 $table_data = '';
-foreach ($clients as $client) {
-    if ($client['PricelistCode'] == 2) {
-        $table_data .= "<tr class='client'>
+if (isset($clients)) {
+    foreach ($clients as $client) {
+        if ($client['PricelistCode'] == 2) {
+            $table_data .= "<tr class='client'>
             <td class='client_number'>{$client['number']}</td>
             <td class='client_name'>{$client['name']}</td>
             <td class='client_email'>{$client['Email']}</td>
             <td class='client_street'>{$client['street']}</td>
             <td class='client_city'>{$client['city']}</td>
             </tr>";
-        $count++;
+            $count++;
+        }
     }
 }
 

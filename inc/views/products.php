@@ -14,6 +14,11 @@
 <div id='admin_message' class="updated notice" style="display: none;"></div>
 <hr>
 <div class='result'>
-    <h2>First <?= $product_class->get_active_products() ?> Active Products from <?= $product_class->get_counted_products() ?></h2>
+    <?php try {?>
+        <h2>First <?= $product_class->get_active_products() ?> Active Products from <?= $product_class->get_counted_products() ?></h2>
+    <?php } catch (\Throwable $th) {?>
+        <h2>No XML file, please sync!</h2>
+    <?php } ?>
+    
     <?php echo $table_data ?>
 </div>
