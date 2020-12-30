@@ -29,7 +29,7 @@
         my_ajax('add_product', product_values);
     });
 
-    function build_product_array(columns){
+    function build_product_array(columns) {
         var product_values = {};
         $.each(columns, function (i, item) {
             if (typeof item.dataset.column !== 'undefined') {
@@ -62,4 +62,35 @@
         });
         my_ajax('add_all_products', products);
     });
+
+    $('#get_date').on('click', function () {
+        var date = new Date($('#log_date').val());
+        var fdate = format_date(date);
+        go_to_log(fdate);
+    });
+
+    
+
 })(jQuery);
+
+function view_selected_log(){
+    var d = document.getElementById("select_logs").value;
+    go_to_log(d);
+}
+
+function go_to_log(date) {
+    if (date != '') {
+        window.location.href = 'admin.php?page=wesLogs&log=' + date;
+    } else {
+        alert('please select date');
+    }
+}
+
+function format_date(date) {
+    var fdate = '';
+    var curr_date = date.getDate();
+    var curr_month = date.getMonth() + 1;
+    var curr_year = date.getFullYear();
+    fdate = curr_date + "-" + curr_month + "-" + curr_year;
+    return fdate;
+}

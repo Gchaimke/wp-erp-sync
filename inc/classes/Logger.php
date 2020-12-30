@@ -29,7 +29,7 @@ class Logger
     {
         $dir = self::$log_path;
         $files = glob($dir . "*.log");
-        return $files;
+        return array_reverse($files);
     }
 
     static function getlogContent($log_date)

@@ -47,22 +47,31 @@ function wes_clients()
 function wes_logs()
 {
     $logs = Logger::getFileList();
+    $i=0;
     $view_log = '';
-    $view_log_list = '<ul>';
+    $view_log_list = '<select name="logs" id="select_logs" onchange="view_selected_log()">';
     foreach ($logs as $log) {
         $log_name_array = explode('/', $log);
         $log_name = end($log_name_array);
-        $log_time = substr($log_name, 0, -4);
-        $view_log_list .= "<li><a href='admin.php?page=wesLogs&log=$log_time'>$log_time</a></li>";
+        $log_date = substr($log_name, 0, -4);
+        $view_log_list .= "<option value='$log_date'>$log_date</option>";
+        $i++;
+        if($i>10){
+            break;
+        }
     }
-    $view_log_list .= '</ul>';
+    $view_log_list .= '</select>';
     if (isset($_GET['log'])) {
         $view_log = Logger::getlogContent($_GET['log']);
+    }else{
+        $view_log = Logger::getlogContent(Date('d-m-Y'));
     }
 
     if (isset($_GET['clear_logs'])) {
         $view_log = Logger::clearLogs();
     }
+
+
     include 'logs.php';
 }
 
@@ -128,6 +137,7 @@ function wes_settings()
     }
 
     if (isset($_GET['cron']) && $_GET['cron'] == 'run') {
+        Logger::log_message('Cron by Click');
         Cron::wes_cron_exec();
     }
 

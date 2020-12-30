@@ -21,6 +21,7 @@ class Google_Helper
     $this->tokenPath = GDATA_FOLDER . 'token.json';
     $this->redirect_uri = 'http://gchaim.com/wp-admin/admin.php?page=dashboard';
     $this->client = new Google_Client();
+    $this->client->setApplicationName("wp-erp-sync");
     $this->client->setAuthConfig($this->oauth_credentials);
     $this->client->setRedirectUri($this->redirect_uri);
     $this->client->addScope("https://www.googleapis.com/auth/drive");
