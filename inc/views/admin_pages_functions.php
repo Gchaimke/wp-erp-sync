@@ -35,9 +35,9 @@ function wes_dashboard()
 function wes_clients()
 {
     $data = new ParseXml();
-    $get_data = $data->get_products_data();
+    $get_data = $data->get_clients_data();
     if ($get_data) {
-        $clients = $get_data['products'];
+        $clients = $get_data['clients'];
     } else {
         $clients = array();
     }

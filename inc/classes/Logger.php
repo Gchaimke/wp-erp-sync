@@ -49,7 +49,8 @@ class Logger
         $dir = self::$log_path;
         $files = glob($dir . "*.log");
         foreach ($files as $file) { // iterate files
-            $log_date = substr(end(explode('/', $file)), 0, -4);
+            $log =end(explode('/', $file));
+            $log_date = substr($log, 0, -4);
             if (is_file($file) && $log_date != date('d-m-Y')) {
                 unlink($file); // delete file
             }
