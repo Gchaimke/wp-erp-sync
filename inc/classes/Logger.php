@@ -35,8 +35,13 @@ class Logger
     static function getlogContent($log_date)
     {
         $dir = self::$log_path;
-        $log = file_get_contents($dir . $log_date . ".log");
-        return $log;
+        $log_path = $dir . $log_date . ".log";
+        if (file_exists($log_path)) {
+            $log = file_get_contents($log_path);
+            return $log;
+        }
+
+        return "No log for ".$log_date.' date';
     }
 
     static function clearLogs()
