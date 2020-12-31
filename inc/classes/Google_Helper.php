@@ -184,7 +184,7 @@ class Google_Helper
         'q' => "'" . $folder[0]['id'] . "' in parents"
       );
       $files = $service->files->listFiles($optParams);
-      Logger::log_message('Files in folder '.count($files->getFiles()));
+      Logger::log_message('Files in folder ' . count($files->getFiles()));
       if (count($files->getFiles()) == 0) {
         print "<h4>No files found in your Sync folder.</h4>";
       } else {
@@ -218,7 +218,9 @@ class Google_Helper
         return $synced;
       }
     } catch (\Throwable $error) {
-      Logger::log_message($error->getMessage(), 1);
+      $error_array = json_decode($error->getMessage(), true);
+      $error_msg = $error_array['error']['errors'][0]['message'];
+      Logger::log_message($error_msg, 1);
       echo $error->getMessage();
       return -1;
     }
