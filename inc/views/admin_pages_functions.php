@@ -1,7 +1,7 @@
 <?php
 
 use WpErpSync\Cron;
-use  WpErpSync\ParseXml;
+use WpErpSync\ParseXml;
 use WpErpSync\Product;
 use WpErpSync\Google_Helper;
 use WpErpSync\Logger;
@@ -41,13 +41,11 @@ function wes_clients()
     } else {
         $clients = array();
     }
-
     include 'clients.php';
 }
 
 function wes_products()
 {
-
     $product_class = new Product();
     if (isset($_GET['limit'])) {
         if ($_GET['limit'] == 'no') {

@@ -175,6 +175,7 @@ class Google_Helper
       'fields' => 'nextPageToken, files',
       'q' => "name = '" . $folderName . "' and mimeType = 'application/vnd.google-apps.folder'"
     );
+    Logger::log_message('Try to sync');
     try {
       $folder =  $service->files->listFiles($optParams);
       $optParams = array(
@@ -183,6 +184,7 @@ class Google_Helper
         'q' => "'" . $folder[0]['id'] . "' in parents"
       );
       $files = $service->files->listFiles($optParams);
+      Logger::log_message('Files in folder '.count($files->getFiles()));
       if (count($files->getFiles()) == 0) {
         print "<h4>No files found in your Sync folder.</h4>";
       } else {
@@ -216,7 +218,7 @@ class Google_Helper
         return $synced;
       }
     } catch (\Throwable $error) {
-      Logger::log_message(json_decode($error->getMessage()), 1);
+      Logger::log_message($error->getMessage(), 1);
       echo $error->getMessage();
       return -1;
     }
