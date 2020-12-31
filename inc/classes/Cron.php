@@ -32,15 +32,14 @@ class Cron
         $client->setAccessToken($tokenObj->access_token);
         Logger::log_message('Set token');
         $sync_status = $google_helper->get_sync_files($google_helper->get_service());
-        Logger::log_message('Redirect URI: '.$google_helper->redirect_uri . " - ");
         //Cron Update products data
         if ($sync_status > 0) {
             $product_class = new Product();
             $product_class->update_all_products();
         } else {
-            Logger::log_message('No Updates - ');
+            Logger::log_message('No Updates');
         }
-        Logger::log_message('Cron job End - ');
+        Logger::log_message('Cron job End');
     }
 
     public static function get_all_jobs()

@@ -10,12 +10,12 @@ class Product
     public function __construct()
     {
         $data = new ParseXml();
-        try {
-            $this->products = $data->get_products_data()['products'];
-        } catch (\Throwable $th) {
-           
+        $get_data = $data->get_products_data();
+        if ($get_data) {
+            $this->products = $get_data['products'];
+        }else{
+            $this->products = array();
         }
-
         $this->set_products_limit(500);
         add_action('wp_ajax_add_product', [$this, 'add_product']);
         add_action('wp_ajax_search_for_product', [$this, 'search_for_product']);

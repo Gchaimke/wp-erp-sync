@@ -16,10 +16,22 @@ $version = '0.1.3';
 //sync timezone with wordpress
 date_default_timezone_set(get_option('timezone_string'));
 define('GDATA_FOLDER', plugin_dir_path(__FILE__) . 'inc/gdrive_data/');
-define('ERP_DATA_FOLDER', plugin_dir_path(__FILE__) . 'erp-data/');
+
 define('PLUGIN_NAME_VERSION', $version);
 define('BASE_PATH', plugin_dir_path(__FILE__));
 define('BASE_URL', plugin_dir_url(__FILE__));
+//define erp-data folder
+$upload_dir = wp_upload_dir();
+define('ERP_DATA_FOLDER', $upload_dir['basedir'] . '/erp-data/');
+//cerate data folders
+$data_folders = array(ERP_DATA_FOLDER,ERP_DATA_FOLDER.'sync/', ERP_DATA_FOLDER.'orders/');
+foreach ($data_folders as $folder) {
+	if (!file_exists($folder)) {
+		mkdir($folder, 0700);
+		file_put_contents($folder . 'index.php', "<?php // Silence is golden.");
+	}
+}
+
 // include the Composer autoload file
 require BASE_PATH . 'vendor/autoload.php';
 // use the classes namespaces

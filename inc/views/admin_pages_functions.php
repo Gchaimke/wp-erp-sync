@@ -35,62 +35,28 @@ function wes_dashboard()
 function wes_clients()
 {
     $data = new ParseXml();
-    try {
-        $clients = $data->get_clients_data()['clients'];
-    } catch (\Throwable $th) {
-        $clients = 'CLIENTS.XML not found';
+    $get_data = $data->get_products_data();
+    if ($get_data) {
+        $clients = $get_data['products'];
+    } else {
+        $clients = array();
     }
 
     include 'clients.php';
 }
 
-function wes_logs()
-{
-    $logs = Logger::getFileList();
-    $i=0;
-    $view_log = '';
-    $view_log_list = '<select name="logs" id="select_logs" onchange="view_selected_log()">';
-    foreach ($logs as $log) {
-        $log_name_array = explode('/', $log);
-        $log_name = end($log_name_array);
-        $log_date = substr($log_name, 0, -4);
-        $view_log_list .= "<option value='$log_date'>$log_date</option>";
-        $i++;
-        if($i>10){
-            break;
-        }
-    }
-    $view_log_list .= '</select>';
-    if (isset($_GET['log'])) {
-        $view_log = Logger::getlogContent($_GET['log']);
-    }else{
-        $view_log = Logger::getlogContent(Date('d-m-Y'));
-    }
-
-    if (isset($_GET['clear_logs'])) {
-        $view_log = Logger::clearLogs();
-    }
-
-
-    include 'logs.php';
-}
-
 function wes_products()
 {
-    try {
-        $product_class = new Product();
-        if (isset($_GET['limit'])) {
-            if ($_GET['limit'] == 'no') {
-                $product_class->set_products_limit(count($product_class->products));
-            } else {
-                $product_class->set_products_limit($_GET['limit']);
-            }
-        }
-        $table_data = $product_class->view_products();
-    } catch (\Throwable $th) {
-        $table_data = 'PRODUCTS.XML not found';
-    }
 
+    $product_class = new Product();
+    if (isset($_GET['limit'])) {
+        if ($_GET['limit'] == 'no') {
+            $product_class->set_products_limit(count($product_class->products));
+        } else {
+            $product_class->set_products_limit($_GET['limit']);
+        }
+    }
+    $table_data = $product_class->view_products();
     include 'products.php';
 }
 
@@ -146,4 +112,35 @@ function wes_settings()
         echo '<h4>' . $_GET['remove_cron'] . ' job removed</h4>';
     }
     Cron::get_all_jobs();
+}
+
+function wes_logs()
+{
+    $logs = Logger::getFileList();
+    $i = 0;
+    $view_log = '';
+    $view_log_list = '<select name="logs" id="select_logs" onchange="view_selected_log()">';
+    foreach ($logs as $log) {
+        $log_name_array = explode('/', $log);
+        $log_name = end($log_name_array);
+        $log_date = substr($log_name, 0, -4);
+        $view_log_list .= "<option value='$log_date'>$log_date</option>";
+        $i++;
+        if ($i > 10) {
+            break;
+        }
+    }
+    $view_log_list .= '</select>';
+    if (isset($_GET['log'])) {
+        $view_log = Logger::getlogContent($_GET['log']);
+    } else {
+        $view_log = Logger::getlogContent(Date('d-m-Y'));
+    }
+
+    if (isset($_GET['clear_logs'])) {
+        $view_log = Logger::clearLogs();
+    }
+
+
+    include 'logs.php';
 }
