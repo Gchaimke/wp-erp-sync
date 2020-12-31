@@ -15,11 +15,18 @@ class Google_Helper
   public $tokenPath;
   public function __construct()
   {
+    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+      $url = "https://";
+    else
+      $url = "http://";
+    // Append the host(domain name, ip) to the URL.   
+    $url .= $_SERVER['HTTP_HOST'];
+
     $this->oauth_credentials = $this->getOAuthCredentialsFile();
     $this->check_credentials();
     $this->register_session();
     $this->tokenPath = GDATA_FOLDER . 'token.json';
-    $this->redirect_uri = 'http://gchaim.com/wp-admin/admin.php?page=dashboard';
+    $this->redirect_uri = $url . '/wp-admin/admin.php?page=dashboard';
     $this->client = new Google_Client();
     $this->client->setApplicationName("wp-erp-sync");
     $this->client->setAuthConfig($this->oauth_credentials);
@@ -162,8 +169,8 @@ class Google_Helper
 
   function get_sync_files($service)
   {
-    $folderId = //'1sqMX_gqttVqcdYQfufL1j-RDW6vweOmv';
-      $folderName = 'SITEEXP';
+    $synced = 0;
+    $folderName = 'SITEEXP';
     $optParams = array(
       'pageSize' => 10,
       'fields' => 'nextPageToken, files',
@@ -199,18 +206,20 @@ class Google_Helper
             fclose($outHandle);
             Logger::log_message($file->getName() . ' Synced! Last modified Time: ' . $time_diferece);
             echo 'file sync success!<br/><br/>' . $time_diferece;
+            $synced++;
           } else {
-            $msg = ' last time modification less then 10 minutes. Not synced.';
+            $msg = ' last modification < 10 minutes. Not synced.';
             echo $msg . '<br/><br/>';
             Logger::log_message($file->getName() . $msg . ' difference ' . $time_diferece);
           }
         }
-        Logger::log_message('Sync files complete');
-        return;
+        Logger::log_message('New files: '.$synced);
+        return $synced;
       }
-    } catch (\Throwable $th) {
-      Logger::log_message(json_encode($th->getMessage()), 1);
-      echo $th->getMessage();
+    } catch (\Throwable $error) {
+      Logger::log_message(json_decode($error->getMessage()), 1);
+      echo $error->getMessage();
+      return -1;
     }
   }
 
@@ -219,7 +228,7 @@ class Google_Helper
     $dir = ERP_DATA_FOLDER . "sync/";
     $files = glob($dir . "*.XML");
     foreach ($files as $file) { // iterate files
-        unlink($file); // delete file
+      unlink($file); // delete file
     }
   }
 }

@@ -22,18 +22,26 @@ class Cron
 
     public static function wes_cron_exec()
     {
-        Logger::log_message('Cron job running.');
+        $log = 'Cron job Sart - ';
         //Cron Sync data files with Gdrive
         $google_helper = new Google_Helper();
         $client = $google_helper->get_client();
         $token = file_get_contents($google_helper->tokenPath);
+        $log .= 'getting token - ';
         $tokenObj = json_decode($token);
         $client->setAccessToken($tokenObj->access_token);
-        $google_helper->get_sync_files($google_helper->get_service());
+        $log .= 'set token - ';
+        $log .= 'Redirect URI: '.$google_helper->redirect_uri . " - ";
+        $sync_status = $google_helper->get_sync_files($google_helper->get_service());
         //Cron Update products data
-        $product_class = new Product();
-        $product_class->update_all_products();
-        Logger::log_message('Cron job End.');
+        if ($sync_status > 0) {
+            $product_class = new Product();
+            $product_class->update_all_products();
+        } else {
+            $log .= 'No Updates - ';
+        }
+        $log .= 'Cron job End - ';
+        Logger::log_message($log);
     }
 
     public static function get_all_jobs()
