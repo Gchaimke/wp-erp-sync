@@ -27,12 +27,12 @@ class Cron
         $google_helper = new Google_Helper();
         $client = $google_helper->get_client();
         $token = file_get_contents($google_helper->tokenPath);
-        $log .= 'getting token - ';
+        $log .= 'Get token - ';
         $tokenObj = json_decode($token);
         $client->setAccessToken($tokenObj->access_token);
-        $log .= 'set token - ';
-        $log .= 'Redirect URI: '.$google_helper->redirect_uri . " - ";
+        $log .= 'Set token - ';
         $sync_status = $google_helper->get_sync_files($google_helper->get_service());
+        $log .= 'Redirect URI: '.$google_helper->redirect_uri . " - ";
         //Cron Update products data
         if ($sync_status > 0) {
             $product_class = new Product();

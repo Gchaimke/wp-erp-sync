@@ -15,11 +15,8 @@ class Google_Helper
   public $tokenPath;
   public function __construct()
   {
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
-      $url = "https://";
-    else
-      $url = "http://";
-    // Append the host(domain name, ip) to the URL.   
+
+    $url =  (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https://" : "http://";
     $url .= $_SERVER['HTTP_HOST'];
 
     $this->oauth_credentials = $this->getOAuthCredentialsFile();
@@ -98,6 +95,7 @@ class Google_Helper
       if ($google_token['refresh_token'] != null) {
         file_put_contents(GDATA_FOLDER . 'refresh-token.json', json_encode($google_token));
       }
+      Logger::log_message('Token generated');
       $this->redirect_to_url($this->redirect_uri);
     } else {
       $this->get_token_from_refresh();
@@ -133,6 +131,7 @@ class Google_Helper
       // save to file
       file_put_contents($this->tokenPath, json_encode($accessTokenUpdated));
       $_SESSION['upload_token'] = $accessTokenUpdated;
+      Logger::log_message('Token refreshed');
       return true;
     }
     Logger::log_message('refresh token not exists', 1);
@@ -174,7 +173,7 @@ class Google_Helper
     $optParams = array(
       'pageSize' => 10,
       'fields' => 'nextPageToken, files',
-      'q' => "name = '" . $folderName . "' and mimeType = 'application/vnd.google-apps.folder'" //"'" . $folderId . "' in parents"
+      'q' => "name = '" . $folderName . "' and mimeType = 'application/vnd.google-apps.folder'"
     );
     try {
       $folder =  $service->files->listFiles($optParams);
@@ -213,7 +212,7 @@ class Google_Helper
             Logger::log_message($file->getName() . $msg . ' difference ' . $time_diferece);
           }
         }
-        Logger::log_message('New files: '.$synced);
+        Logger::log_message('New files: ' . $synced);
         return $synced;
       }
     } catch (\Throwable $error) {
