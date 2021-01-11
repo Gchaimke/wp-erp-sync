@@ -190,15 +190,15 @@ class Google_Helper
         print "<h3>Files in Sync folder:</h3>";
         foreach ($files->getFiles() as $file) {
           printf("<a target='_blank' href='https://drive.google.com/open?id=%s' >%s </a>Last modifed: %s</br>", $file->getId(), $file->getName(), $file->getModifiedTime());
-          $file_name = ERP_DATA_FOLDER . "sync/" . $file->getName();
+          $file_path = ERP_DATA_FOLDER . "sync/" . $file->getName();
           $local_file_modifed =  NULL;
-          if (file_exists($file_name)) {
-            $local_file_modifed =  filemtime($file_name);
+          if (file_exists($file_path)) {
+            $local_file_modifed =  filemtime($file_path);
           }
           $server_file_modifed = strtotime($file->getModifiedTime());
           $time_diferece = $server_file_modifed - $local_file_modifed;
           if ($time_diferece > 500) {
-            $outHandle = fopen($file_name, "w+");
+            $outHandle = fopen($file_path, "w+");
             $content =  $service->files->get($file->getId(), array('alt' => 'media'));
             while (!$content->getBody()->eof()) {
               fwrite($outHandle, $content->getBody()->read(1024));
