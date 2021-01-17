@@ -23,6 +23,8 @@ define('BASE_URL', plugin_dir_url(__FILE__));
 //define erp-data folder
 $upload_dir = wp_upload_dir();
 define('ERP_DATA_FOLDER', $upload_dir['basedir'] . '/erp-data/');
+// Set this variable to specify a minimum order value
+define('MIN_ORDER', 100);
 //cerate data folders
 $data_folders = array(ERP_DATA_FOLDER,ERP_DATA_FOLDER.'sync/', ERP_DATA_FOLDER.'orders/');
 foreach ($data_folders as $folder) {
@@ -138,6 +140,7 @@ function wes_add_new_user_column_content($content, $column, $user_id)
 	}
 	return $content;
 }
+
 /**
  * Set a minimum order amount for checkout
  */
@@ -145,10 +148,7 @@ add_action( 'woocommerce_checkout_process', 'wes_minimum_order_amount' );
 add_action( 'woocommerce_before_cart' , 'wes_minimum_order_amount' );
  
 function wes_minimum_order_amount() {
-    // Set this variable to specify a minimum order value
-    $minimum = 100;
-
-    if ( WC()->cart->total < $minimum ) {
+    if ( WC()->cart->total < MIN_ORDER ) {
 		
 		if(is_rtl()){
 			$msg ='הזמנה שלך היא %s מינימום הזמנה %s';
@@ -159,7 +159,7 @@ function wes_minimum_order_amount() {
             wc_print_notice( 
                 sprintf( $msg, 
                     wc_price( WC()->cart->total ), 
-                    wc_price( $minimum )
+                    wc_price( MIN_ORDER)
                 ), 'error' 
             );
 
@@ -167,7 +167,7 @@ function wes_minimum_order_amount() {
             wc_add_notice( 
                 sprintf( $msg , 
                     wc_price( WC()->cart->total ), 
-                    wc_price( $minimum )
+                    wc_price( MIN_ORDER )
                 ), 'error' 
             );
 
