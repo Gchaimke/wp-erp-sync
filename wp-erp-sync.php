@@ -138,3 +138,39 @@ function wes_add_new_user_column_content($content, $column, $user_id)
 	}
 	return $content;
 }
+/**
+ * Set a minimum order amount for checkout
+ */
+add_action( 'woocommerce_checkout_process', 'wes_minimum_order_amount' );
+add_action( 'woocommerce_before_cart' , 'wes_minimum_order_amount' );
+ 
+function wes_minimum_order_amount() {
+    // Set this variable to specify a minimum order value
+    $minimum = 100;
+
+    if ( WC()->cart->total < $minimum ) {
+		
+		if(is_rtl()){
+			$msg ='הזמנה שלך היא %s מינימום הזמנה %s';
+		}else{
+			$msg = 'Your current order total is %s — you must have an order with a minimum of %s to place your order ' ;
+		}
+        if( is_cart() ) {
+            wc_print_notice( 
+                sprintf( $msg, 
+                    wc_price( WC()->cart->total ), 
+                    wc_price( $minimum )
+                ), 'error' 
+            );
+
+        } else {
+            wc_add_notice( 
+                sprintf( $msg , 
+                    wc_price( WC()->cart->total ), 
+                    wc_price( $minimum )
+                ), 'error' 
+            );
+
+        }
+    }
+}
