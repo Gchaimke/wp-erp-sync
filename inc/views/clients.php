@@ -1,6 +1,7 @@
 <?php
-$count = 0;
-$exists_count = 0;
+$users_count = 0;
+$wp_users_count = 0;
+$resalers_count = 0;
 $table_data = '';
 if (isset($clients)) {
     $all_users = get_users();
@@ -19,17 +20,21 @@ if (isset($clients)) {
     }
     foreach ($clients as $client) {
         if ($client['PricelistCode']) {
+            $resaler = ($client['PricelistCode']==2)?'yes':'no';
+            $exists = 'no';
             if (in_array($client['Email'], $users_meta)) {
                 $exists = 'yes';
             } else if (in_array($client['Cellular'], $users_meta)) {
                 $exists = 'yes';
             } else if (in_array($client['Phone1'], $users_meta)) {
                 $exists = 'yes';
-            } else {
-                $exists = 'no';
-            }
+            } 
+
             if ($exists == 'yes') {
-                $exists_count++;
+                $wp_users_count++;
+            }
+            if($resaler == 'yes'){
+                $resalers_count++;
             }
             $table_data .= "<tr class='client'>
             <td class='client_number'>{$client['number']}</td>
@@ -39,8 +44,8 @@ if (isset($clients)) {
             <td class='client_phone'>{$client['Phone1']}</td>
             <td class='client_street'>{$client['street']}</td>
             <td class='client_city'>{$client['city']}</td>
-            <td class='client_exists'>$exists</td></tr>";
-            $count++;
+            <td class='client_exists'>$exists</td></tr>";//PricelistCode
+            $users_count++;
         }
     }
 }
@@ -49,8 +54,9 @@ if (isset($clients)) {
 
 ?>
 
-<h2><?= $count ?> Resellers</h2>
-<h3><?= $exists_count ?> WP Users</h3>
+<h4><?= $users_count ?> Users</h4>
+<h4><?= $wp_users_count ?> WP Users</h4>
+<h4><?= $resalers_count ?> Reseler Users</h4>
 <table class="widefat striped">
     <tr>
         <th>ERP Number</th>
