@@ -68,9 +68,7 @@
         var fdate = format_date(date);
         go_to_log(fdate);
     });
-
     
-
 })(jQuery);
 
 function view_selected_log(){

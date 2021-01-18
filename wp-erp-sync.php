@@ -83,8 +83,15 @@ function wes_admin_scripts()
 	]);
 	wp_enqueue_script('wes');
 }
-
 add_action('admin_enqueue_scripts', 'wes_admin_scripts');
+
+function wes_user_scripts(){
+	global $version;
+	wp_register_script('wes', plugin_dir_url(__FILE__) . 'inc/js/wes-user.js', ['jquery'], $version, true);
+	wp_enqueue_script('wes');
+}
+add_action('wp_enqueue_scripts', 'wes_user_scripts');
+
 
 register_deactivation_hook(__FILE__, 'wes_deactivate');
 
