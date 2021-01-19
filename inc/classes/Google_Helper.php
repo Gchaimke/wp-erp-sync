@@ -166,6 +166,22 @@ class Google_Helper
     }
   }
 
+  function try_to_sync($service)
+  {
+    $folderName = 'SITEEXP';
+    $optParams = array(
+      'pageSize' => 10,
+      'fields' => 'nextPageToken, files',
+      'q' => "name = '" . $folderName . "' and mimeType = 'application/vnd.google-apps.folder'"
+    );
+    try {
+      $service->files->listFiles($optParams);
+      return true;
+    } catch (\Throwable $error) {
+      return false;
+    }
+  }
+
   function get_sync_files($service)
   {
     $synced = 0;

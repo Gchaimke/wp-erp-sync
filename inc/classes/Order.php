@@ -81,20 +81,23 @@ class Order
             $product->addChild('LineComment', '');
         }
         $result = $xml->asXML(ERP_DATA_FOLDER . "orders/SITEDOC_".$order_id . '.xml');
-        $google_helper = new Google_Helper;
-
-        if (!empty($_SESSION['upload_token'])) {
-            $google_helper->get_client()->setAccessToken($_SESSION['upload_token']);
-            if ( $google_helper->get_client()->isAccessTokenExpired()) {
-                unset($_SESSION['upload_token']);
-            }
-        } else {
-            if (!$google_helper->get_token_from_refresh()) {
-                $authUrl =  $google_helper->get_client()->createAuthUrl();
-            }
-        }
-        $google_helper->upload_file($order_id,$google_helper->get_service());
-        $google_helper->redirect_to_url('/shop',5000);
+        //Google Upload
+        $google_helper = new Google_Helper();
+        $client = $google_helper->get_client();
+        $token = file_get_contents($google_helper->tokenPath);
+        $tokenObj = json_decode($token);
+        $client->setAccessToken($tokenObj->access_token);
+        $sync_status = $google_helper->try_to_sync($google_helper->get_service());
+        if ($sync_status > 0) {
+            Logger::log_message('Uploading order:'.$order_id);
+            $google_helper->upload_file($order_id,$google_helper->get_service());
+        }else if($sync_status == -1){
+            Logger::log_message('Try to get token from refresh.');
+            $google_helper->get_token_from_refresh();
+            Logger::log_message('Uploading order:'.$order_id);
+            $google_helper->upload_file($order_id,$google_helper->get_service());
+        }        
+        //$google_helper->redirect_to_url('/shop',5000);
         Logger::log_message('New order created! SITEDOC_'.$order_id.'.xml');
         return $result;
     }
