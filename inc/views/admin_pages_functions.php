@@ -3,6 +3,7 @@
 use WpErpSync\Cron;
 use WpErpSync\ParseXml;
 use WpErpSync\Product;
+use WpErpSync\Clients;
 use WpErpSync\Google_Helper;
 use WpErpSync\Logger;
 
@@ -34,13 +35,7 @@ function wes_dashboard()
 
 function wes_clients()
 {
-    $data = new ParseXml();
-    $get_data = $data->get_clients_data();
-    if ($get_data) {
-        $clients = $get_data['clients'];
-    } else {
-        $clients = array();
-    }
+    $clientsCl = new Clients();
     include 'clients.php';
 }
 
