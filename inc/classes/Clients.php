@@ -43,13 +43,13 @@ class Clients
         $users_meta = array();
         foreach ($all_users as $user) {
             $meta = get_user_meta($user->ID);
-            if ($meta['billing_email'] !== null && $meta['billing_email'][0] != '') {
+            if (is_array($meta)  && array_key_exists("billing_email", $meta) && $meta['billing_email'][0] != 0) {
                 array_push($users_meta, $meta['billing_email'][0]);
             }
-            if ($meta['billing_phone'] !== null && $meta['billing_phone'][0] != '') {
+            if (is_array($meta) && array_key_exists("billing_phone", $meta) && $meta['billing_phone'][0] != 0) {
                 array_push($users_meta, $meta['billing_phone'][0]);
             }
-            if ($meta['billing_address_1'] !== null && $meta['billing_address_1'][0] != '') {
+            if (is_array($meta) && array_key_exists("billing_address_1", $meta) && $meta['billing_address_1'][0] != 0) {
                 array_push($users_meta, $meta['billing_address_1'][0]);
             }
         }
