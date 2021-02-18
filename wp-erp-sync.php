@@ -39,7 +39,7 @@ require BASE_PATH . 'vendor/autoload.php';
 // use the classes namespaces
 use WpErpSync\Shortcodes;
 use WpErpSync\Plugin;
-use WpErpSync\Product;
+use WpErpSync\WesProduct;
 use WpErpSync\Order;
 use WpErpSync\Cron;
 use WpErpSync\Logger;
@@ -48,7 +48,7 @@ use WpErpSync\Logger;
 $displayDate = new Shortcodes\Today();
 $plugin    = new Plugin();
 try {
-	$product = new Product();
+	$product = new WesProduct();
 } catch (\Throwable $th) {
 	echo "XML not found";
 }

@@ -2,7 +2,7 @@
 
 use WpErpSync\Cron;
 use WpErpSync\ParseXml;
-use WpErpSync\Product;
+use WpErpSync\WesProduct;
 use WpErpSync\Clients;
 use WpErpSync\Google_Helper;
 use WpErpSync\Logger;
@@ -41,7 +41,7 @@ function wes_clients()
 
 function wes_products()
 {
-    $product_class = new Product();
+    $product_class = new WesProduct();
     if (isset($_GET['limit'])) {
         if ($_GET['limit'] == 'no') {
             $product_class->set_products_limit(count($product_class->products));

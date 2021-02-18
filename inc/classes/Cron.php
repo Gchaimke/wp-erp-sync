@@ -32,7 +32,7 @@ class Cron
         $sync_status = $google_helper->get_sync_files($google_helper->get_service());
         //Cron Update products data
         if ($sync_status > 0) {
-            $product_class = new Product();
+            $product_class = new WesProduct();
             $product_class->update_all_products();
         }else if($sync_status == -1){
             Logger::log_message('Try to get token from refresh.');

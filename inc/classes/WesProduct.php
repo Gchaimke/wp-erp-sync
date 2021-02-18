@@ -2,7 +2,7 @@
 
 namespace WpErpSync;
 
-class Product
+class WesProduct
 {
     private $max_products;
     private $active_products;

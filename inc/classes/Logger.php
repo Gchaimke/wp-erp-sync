@@ -41,7 +41,7 @@ class Logger
             return $log;
         }
 
-        return "No log for ".$log_date.' date';
+        return "No log for " . $log_date . ' date';
     }
 
     static function clearLogs()
@@ -49,7 +49,8 @@ class Logger
         $dir = self::$log_path;
         $files = glob($dir . "*.log");
         foreach ($files as $file) { // iterate files
-            $log =end(explode('/', $file));
+            $log = explode('/', $file);
+            $log = end($log);
             $log_date = substr($log, 0, -4);
             if (is_file($file) && $log_date != date('d-m-Y')) {
                 unlink($file); // delete file
