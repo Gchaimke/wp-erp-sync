@@ -26,7 +26,7 @@ define('ERP_DATA_FOLDER', $upload_dir['basedir'] . '/erp-data/');
 // Set this variable to specify a minimum order value
 define('MIN_ORDER', 100);
 //cerate data folders
-$data_folders = array(ERP_DATA_FOLDER,ERP_DATA_FOLDER.'sync/', ERP_DATA_FOLDER.'orders/');
+$data_folders = array(ERP_DATA_FOLDER, ERP_DATA_FOLDER . 'sync/', ERP_DATA_FOLDER . 'orders/');
 foreach ($data_folders as $folder) {
 	if (!file_exists($folder)) {
 		mkdir($folder, 0700);
@@ -85,7 +85,8 @@ function wes_admin_scripts()
 }
 add_action('admin_enqueue_scripts', 'wes_admin_scripts');
 
-function wes_user_scripts(){
+function wes_user_scripts()
+{
 	global $version;
 	wp_register_script('wes', plugin_dir_url(__FILE__) . 'inc/js/wes-user.js', ['jquery'], $version, true);
 	wp_enqueue_script('wes');
@@ -151,33 +152,69 @@ function wes_add_new_user_column_content($content, $column, $user_id)
 /**
  * Set a minimum order amount for checkout
  */
-add_action( 'woocommerce_checkout_process', 'wes_minimum_order_amount' );
-add_action( 'woocommerce_before_cart' , 'wes_minimum_order_amount' );
- 
-function wes_minimum_order_amount() {
-    if ( WC()->cart->total < MIN_ORDER ) {
-		
-		if(is_rtl()){
-			$msg ='הזמנה שלך היא %s מינימום הזמנה %s';
-		}else{
-			$msg = 'Your current order total is %s — you must have an order with a minimum of %s to place your order ' ;
+add_action('woocommerce_checkout_process', 'wes_minimum_order_amount');
+add_action('woocommerce_before_cart', 'wes_minimum_order_amount');
+
+function wes_minimum_order_amount()
+{
+	if (WC()->cart->total < MIN_ORDER) {
+
+		if (is_rtl()) {
+			$msg = 'הזמנה שלך היא %s מינימום הזמנה %s';
+		} else {
+			$msg = 'Your current order total is %s — you must have an order with a minimum of %s to place your order ';
 		}
-        if( is_cart() ) {
-            wc_print_notice( 
-                sprintf( $msg, 
-                    wc_price( WC()->cart->total ), 
-                    wc_price( MIN_ORDER)
-                ), 'error' 
-            );
-
-        } else {
-            wc_add_notice( 
-                sprintf( $msg , 
-                    wc_price( WC()->cart->total ), 
-                    wc_price( MIN_ORDER )
-                ), 'error' 
-            );
-
-        }
-    }
+		if (is_cart()) {
+			wc_print_notice(
+				sprintf(
+					$msg,
+					wc_price(WC()->cart->total),
+					wc_price(MIN_ORDER)
+				),
+				'error'
+			);
+		} else {
+			wc_add_notice(
+				sprintf(
+					$msg,
+					wc_price(WC()->cart->total),
+					wc_price(MIN_ORDER)
+				),
+				'error'
+			);
+		}
+	}
 }
+
+//to remove zero price items uncomment
+//add_action('woocommerce_product_query', 'wes_product_query');
+function wes_product_query($q)
+{
+	$meta_query = $q->get('meta_query');
+	$meta_query[] = array(
+		'key'       => '_price',
+		'value'     => 0,
+		'compare'   => '>'
+	);
+	$q->set('meta_query', $meta_query);
+}
+
+//remove add to cart button if price is 0
+function wes_remove_add_to_cart_on_0 ( $purchasable, $product ){
+	if( $product->get_price() == 0 )
+		$purchasable = false;
+	return $purchasable;
+}
+add_filter( 'woocommerce_is_purchasable', 'wes_remove_add_to_cart_on_0', 10, 2 );
+
+//change 0.00 price to text
+add_filter( 'woocommerce_get_price_html','maybe_hide_price',10,2);
+function maybe_hide_price($price_html, $product){
+     if($product->get_price()>0){
+          return $price_html;
+     }
+     return 'For Order please call: 074-7155000';
+ }
+
+//disable add to cart
+//add_filter( 'woocommerce_is_purchasable', '__return_false');

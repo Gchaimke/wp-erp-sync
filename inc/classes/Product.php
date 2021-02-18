@@ -13,7 +13,7 @@ class Product
         $get_data = $data->get_products_data();
         if ($get_data) {
             $this->products = $get_data['products'];
-        }else{
+        } else {
             $this->products = array();
         }
         $this->set_products_limit(500);
@@ -61,10 +61,8 @@ class Product
         $table_data = "<table class='widefat striped'>" . $this->view_products_table_head();
         if (isset($this->products)) {
             foreach ($this->products as $product) {
-                if ($product['price'] > 0 && $product['stock'] > 0) {
-                    $table_data .= $this->view_product_line($product, $count);
-                    $active++;
-                }
+                $table_data .= $this->view_product_line($product, $count);
+                $active++;
                 $count++;
                 if ($count > $this->get_products_limit())
                     break;
@@ -84,7 +82,7 @@ class Product
         if (strlen($serch_txt) > 2) {
             $table_data .= "<table id='search_table' class='widefat striped'>" . $this->view_products_table_head();
             foreach ($this->products as $product) {
-                if ($product['price'] > 0 && (stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false)) {
+                if ((stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false)) {
                     $table_data .= $this->view_product_line($product, $count);
                     $count++;
                 }
@@ -147,7 +145,7 @@ class Product
     {
         $all_sku = $this->get_existings_products_skus();
         if (!in_array($product_data['SKU'], $all_sku)) {
-            $product = $this->get_new_product_array($product_data['SKU']);
+            $product = $this->get_new_product_array($product_data['name']);
             $post_id = wp_insert_post($product);
             wp_set_object_terms($post_id, 'simple', 'product_type');
             update_post_meta($post_id, '_regular_price', intval($product_data['price'], 10));
@@ -174,7 +172,6 @@ class Product
     function add_all_products()
     {
         $count = 0;
-        $success = 0;
         $products = array();
         if ($_POST['data']) {
             $products = $_POST['data'];
@@ -182,15 +179,12 @@ class Product
             $products = $this->products;
         }
         foreach ($products as $product) {
-            if ($product['price'] > 0 && $product['stock'] > 0) {
-                $this->add_one_product($product);
-                $success++;
-            }
+            $this->add_one_product($product);
             $count++;
             if ($count > $this->get_products_limit())
                 break;
         }
-        echo (" - " . $success . ' new products added!');
+        echo (" - " . $count . ' new products added!');
     }
 
     function update_all_products()
@@ -200,7 +194,7 @@ class Product
         $success = 0;
         $all_sku = $this->get_existings_products_skus();
         foreach ($this->products as $product) {
-            if ($product['price'] > 0 && $product['stock'] > 0 && in_array($product['SKU'], $all_sku)) {
+            if (in_array($product['SKU'], $all_sku)) {
                 $product_id = $wpdb->get_var($wpdb->prepare("SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_sku' AND meta_value='%s' LIMIT 1", $product['SKU']));
                 update_post_meta($product_id, '_regular_price', intval($product['price'], 10));
                 update_post_meta($product_id, '_price', intval($product['price'], 10));
