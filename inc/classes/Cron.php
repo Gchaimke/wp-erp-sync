@@ -24,24 +24,34 @@ class Cron
     {
         Logger::log_message('=== Cron job Sart ===');
         //Cron Sync data files with Gdrive
+        $sync_status = Cron::wes_sync_files();
+        if ($sync_status > 0) {
+            //Cron Update products data
+            $product_class = new WesProduct();
+            $product_class->update_all_products();
+        } else {
+            Logger::log_message('No Updates');
+        }
+        Logger::log_message('*** Cron job End ***');
+    }
+
+    private static function wes_sync_files()
+    {
         $google_helper = new Google_Helper();
         $client = $google_helper->get_client();
         $token = file_get_contents($google_helper->tokenPath);
         $tokenObj = json_decode($token);
         $client->setAccessToken($tokenObj->access_token);
         $sync_status = $google_helper->get_sync_files($google_helper->get_service());
-        //Cron Update products data
         if ($sync_status > 0) {
-            $product_class = new WesProduct();
-            $product_class->update_all_products();
-        }else if($sync_status == -1){
+            return $sync_status;
+        } else if ($sync_status == -1) {
             Logger::log_message('Try to get token from refresh.');
             $google_helper->get_token_from_refresh();
-        } else {
-            Logger::log_message('No Updates');
+            return $google_helper->get_sync_files($google_helper->get_service());
         }
-        Logger::log_message('*** Cron job End ***');
     }
+
 
     public static function get_all_jobs()
     {
