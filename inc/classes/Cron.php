@@ -48,6 +48,7 @@ class Cron
         } else if ($sync_status == -1) {
             Logger::log_message('Try to get token from refresh.');
             $google_helper->get_token_from_refresh();
+            sleep(5);
             return $google_helper->get_sync_files($google_helper->get_service());
         }
     }
