@@ -113,6 +113,15 @@ class Google_Helper
             ';
   }
 
+  static function get_token()
+  {
+    $self = new static;
+    if (!file_exists($self->tokenPath)) {
+      $self->get_token_from_refresh();
+    }
+    return json_decode(file_get_contents($self->tokenPath));
+  }
+
   function get_token_from_refresh()
   {
     if (file_exists(GDATA_FOLDER . 'refresh-token.json')) {
@@ -132,7 +141,7 @@ class Google_Helper
       file_put_contents($this->tokenPath, json_encode($accessTokenUpdated));
       $_SESSION['upload_token'] = $accessTokenUpdated;
       Logger::log_message('Token refreshed');
-      return true;
+      return $accessTokenUpdated;
     }
     Logger::log_message('refresh token not exists', 1);
     return false;

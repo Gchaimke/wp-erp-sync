@@ -39,16 +39,14 @@ class Cron
     {
         $google_helper = new Google_Helper();
         $client = $google_helper->get_client();
-        $token = file_get_contents($google_helper->tokenPath);
-        $tokenObj = json_decode($token);
-        $client->setAccessToken($tokenObj->access_token);
+        $token = $google_helper->get_token()->access_token;
+        $client->setAccessToken($token);
         $sync_status = $google_helper->get_sync_files($google_helper->get_service());
         if ($sync_status > 0) {
             return $sync_status;
         } else if ($sync_status == -1) {
             Logger::log_message('Try to get token from refresh.');
-            $google_helper->get_token_from_refresh();
-            sleep(5);
+            $client->setAccessToken($google_helper->get_token_from_refresh());
             return $google_helper->get_sync_files($google_helper->get_service());
         }
     }

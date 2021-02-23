@@ -1,5 +1,5 @@
 <h1>Logs</h1>
-
+<h2>Server time: <?=date('H:i:s')?></h2>
 <div id="log_list">
 <label>Last 10 Logs: </label><?php print($view_log_list) ?><br>
 <label>Select log date: </label><input id="log_date" type="date" value=""><div id="get_date" class="button" >View Log</div><br>
