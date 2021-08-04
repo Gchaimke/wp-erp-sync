@@ -24,7 +24,7 @@ define('BASE_URL', plugin_dir_url(__FILE__));
 $upload_dir = wp_upload_dir();
 define('ERP_DATA_FOLDER', $upload_dir['basedir'] . '/erp-data/');
 // Set this variable to specify a minimum order value
-define('MIN_ORDER', 100);
+define('MIN_ORDER', 200);
 //cerate data folders
 $data_folders = array(ERP_DATA_FOLDER, ERP_DATA_FOLDER . 'sync/', ERP_DATA_FOLDER . 'orders/');
 foreach ($data_folders as $folder) {
@@ -152,8 +152,10 @@ function wes_add_new_user_column_content($content, $column, $user_id)
 /**
  * Set a minimum order amount for checkout
  */
+
+add_action('woocommerce_after_checkout_form', 'wes_minimum_order_amount');
 add_action('woocommerce_checkout_process', 'wes_minimum_order_amount');
-add_action('woocommerce_before_cart', 'wes_minimum_order_amount');
+add_action('woocommerce_after_cart', 'wes_minimum_order_amount');
 
 function wes_minimum_order_amount()
 {
@@ -165,24 +167,37 @@ function wes_minimum_order_amount()
 			$msg = 'Your current order total is %s — you must have an order with a minimum of %s to place your order ';
 		}
 		if (is_cart()) {
-			wc_print_notice(
-				sprintf(
-					$msg,
-					wc_price(WC()->cart->total),
-					wc_price(MIN_ORDER)
-				),
-				'error'
-			);
+			wc_print_notice(sprintf($msg,wc_price(WC()->cart->total),wc_price(MIN_ORDER)),'error');
 		} else {
-			wc_add_notice(
-				sprintf(
-					$msg,
-					wc_price(WC()->cart->total),
-					wc_price(MIN_ORDER)
-				),
-				'error'
-			);
+			wc_add_notice(sprintf($msg." !",wc_price(WC()->cart->total),wc_price(MIN_ORDER)),'error');
 		}
+		echo "<script>
+		(function ($) {
+		$( document.body ).on( 'updated_cart_totals', function(){
+            toggle_cart();
+        });
+        $( document.body ).on( 'updated_checkout', function(){
+            toggle_cart();
+        });
+		toggle_cart();
+    	
+    	function toggle_cart(){
+    	    let error = $(document.body).find('.woocommerce-error');
+    	    if (error.length > 0) {
+                $('.wc-proceed-to-checkout').hide();
+                $('#order_review_heading').hide();
+                $('#order_review').hide();
+                $('#customer_details').hide();
+                $('#payment').hide();
+    	    }else{
+        	    $('.wc-proceed-to-checkout').show();
+        	    $('#order_review_heading').show();
+                $('#order_review').show();
+        	    $('#customer_details').hide();
+        	    $('#payment').show();
+    	    }
+    	}
+        })(jQuery);</script>";
 	}
 }
 
@@ -218,3 +233,13 @@ function maybe_hide_price($price_html, $product){
 
 //disable add to cart
 //add_filter( 'woocommerce_is_purchasable', '__return_false');
+
+//round up prices
+//add_filter( 'woocommerce_get_price_excluding_tax', 'round_price_product', 10, 1 );
+//add_filter( 'woocommerce_get_price_including_tax', 'round_price_product', 10, 1 );
+//add_filter( 'woocommerce_tax_round', 'round_price_product', 10, 1);
+
+function round_price_product( $price ){
+    // Return rounded price
+    return ceil( $price ); 
+}
