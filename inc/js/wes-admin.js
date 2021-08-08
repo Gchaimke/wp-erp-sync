@@ -1,25 +1,24 @@
 (function ($) {
     'use strict';
     function my_ajax(action, values = '', html = false) {
+        $(".spinner").addClass("is-active");
         $.post(ajaxurl, {
             security: settings.nonce,
             action: action,
             data: values
-        })
-            .done(function (res) {
-                if (html) {
-                    $('#admin_message').append(res).fadeIn(1000);
-                } else {
-                    $('#admin_message').text(res).fadeIn(1000).delay(3000).fadeOut(1000);
-                }
+        }).done(function (res) {
+            if (html) {
+                $('#admin_message').append(res).fadeIn(1000);
+            } else {
+                $('#admin_message').text(res).fadeIn(1000).delay(5000).fadeOut(1000);
+            }
 
-            })
-            .fail(function () {
-                console.log('AJAX failed!');
-            })
-            .always(function () {
-                console.log('AJAX called.');
-            });
+        }).fail(function () {
+            console.log('AJAX failed!');
+        }).always(function () {
+            console.log('AJAX called.');
+            $(".spinner").removeClass("is-active");
+        });
     }
 
     $('div#wpbody-content').on('click', 'button', function () {
@@ -68,10 +67,10 @@
         var fdate = format_date(date);
         go_to_log(fdate);
     });
-    
+
 })(jQuery);
 
-function view_selected_log(){
+function view_selected_log() {
     var d = document.getElementById("select_logs").value;
     go_to_log(d);
 }

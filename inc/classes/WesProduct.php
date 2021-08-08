@@ -16,7 +16,7 @@ class WesProduct
         } else {
             $this->products = array();
         }
-        $this->set_products_limit(500);
+        $this->set_products_limit(100);
         add_action('wp_ajax_add_product', [$this, 'add_product']);
         add_action('wp_ajax_search_for_product', [$this, 'search_for_product']);
         add_action('wp_ajax_add_all_products', [$this, 'add_all_products']);
@@ -56,11 +56,13 @@ class WesProduct
 
     public function view_products()
     {
-        $count = 0;
+        $count = 1;
         $active = 0;
         $table_data = "<table class='widefat striped'>" . $this->view_products_table_head();
         if (isset($this->products)) {
             foreach ($this->products as $product) {
+                if($product["price"] == "0") continue;
+                if($product["stock"] == "0") continue;
                 $table_data .= $this->view_product_line($product, $count);
                 $active++;
                 $count++;
@@ -179,6 +181,8 @@ class WesProduct
             $products = $this->products;
         }
         foreach ($products as $product) {
+            if($product["price"] == "0") continue;
+            if($product["stock"] == "0") continue;
             $this->add_one_product($product);
             $count++;
             if ($count > $this->get_products_limit())
@@ -212,8 +216,8 @@ class WesProduct
             }
             $count++;
         }
-        $msg = ' - ' . $success . ' products updated!';
-        echo ($msg);
+        $msg = "Total: $count, Updated: $success ";
+        echo $msg;
         Logger::log_message($msg);
     }
 

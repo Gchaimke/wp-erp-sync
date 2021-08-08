@@ -10,15 +10,16 @@
     <input type="text" id="search_product" name='product-search' value="">
     <div class='search_for_product button action'>Search</div>
     <div class='add_products_from_search button action' style="display: none;">Add All From Search</div>
-</div><br />
+</div>
+<div class="spinner" style="float: none;"></div>
 <div id='admin_message' class="updated notice" style="display: none;"></div>
 <hr>
 <div class='result'>
-    <?php try {?>
+    <?php try { ?>
         <h2>First <?= $product_class->get_active_products() ?> Active Products from <?= $product_class->get_counted_products() ?></h2>
-    <?php } catch (\Throwable $th) {?>
+    <?php } catch (\Throwable $th) { ?>
         <h2>No XML file, please sync!</h2>
     <?php } ?>
-    
+
     <?php echo $table_data ?>
 </div>
