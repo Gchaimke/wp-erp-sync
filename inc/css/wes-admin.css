@@ -1,0 +1,29 @@
+.form_control {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    font-weight: 600;
+    max-width: 500px;
+    justify-content: space-between;
+    font-size: 1.2em;
+}
+
+#admin_message {
+    display: block;
+    height: 400px;
+    overflow: auto;
+}
+
+.result {
+    height: 60vh;
+    overflow: auto;
+  }
+
+.fixed_head thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #e6e6e7;
+}
