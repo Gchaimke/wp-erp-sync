@@ -12,7 +12,7 @@
 if (!defined('WPINC')) {
 	die;
 }
-$version = '0.1.3';
+$version = '0.2.0';
 //sync timezone with wordpress
 date_default_timezone_set(get_option('timezone_string'));
 define('GDATA_FOLDER', plugin_dir_path(__FILE__) . 'inc/gdrive_data/');

@@ -15,29 +15,34 @@ class WesClients
 
     public function get_clients($filter = 0)
     {
-        $data = new ParseXml();
-        $clients = $data->get_clients_data()['clients'];
         $filtered_clients = array();
         $users_meta = $this->get_wp_users_meta();
-        if ($filter == 1) { //resselers
-            foreach ($clients as $client) {
-                if ($this->isResseller($client)) {
-                    array_push($filtered_clients, $client);
+        $data = new ParseXml();
+        $clients = $data->get_clients_data();
+        if ($clients) {
+            $this->clients = $clients['clients'];
+            if ($filter == 1) { //resselers
+                foreach ($clients as $client) {
+                    if ($this->isResseller($client)) {
+                        array_push($filtered_clients, $client);
+                    }
                 }
-            }
-            $this->clientsCount = count($filtered_clients);
-            return $filtered_clients;
-        } else if ($filter == 2) { //all users
-            $this->clientsCount = count($clients);
-            return $clients;
-        } else { //wp users
-            foreach ($clients as $client) {
-                if ($this->isWpUser($client, $users_meta)) {
-                    array_push($filtered_clients, $client);
+                $this->clientsCount = count($filtered_clients);
+                return $filtered_clients;
+            } else if ($filter == 2) { //all users
+                $this->clientsCount = count($clients);
+                return $clients;
+            } else { //wp users
+                foreach ($clients as $client) {
+                    if ($this->isWpUser($client, $users_meta)) {
+                        array_push($filtered_clients, $client);
+                    }
                 }
+                $this->clientsCount = count($filtered_clients);
+                return $filtered_clients;
             }
-            $this->clientsCount = count($filtered_clients);
-            return $filtered_clients;
+        } else {
+            $this->clients = array();
         }
     }
 
@@ -63,8 +68,10 @@ class WesClients
     public function buildClientsTable($clients)
     {
         $table_data = "<table class='widefat striped fixed_head'>" . $this->view_clients_table_head();
-        foreach ($clients as $client) {
-            $table_data .= $this->view_client_line($client);
+        if (is_array($clients)) {
+            foreach ($clients as $client) {
+                $table_data .= $this->view_client_line($client);
+            }
         }
 
         $table_data .= " </table>";
@@ -134,8 +141,8 @@ class WesClients
                 if (
                     stripos($client['name'], $serch_txt) !== false ||
                     stripos($client['Email'], $serch_txt) !== false ||
-                    stripos($client['Phone1'], $serch_txt) !== false||
-                    stripos($client['Cellular'], $serch_txt) !== false||
+                    stripos($client['Phone1'], $serch_txt) !== false ||
+                    stripos($client['Cellular'], $serch_txt) !== false ||
                     stripos($client['number'], $serch_txt) !== false
                 ) {
                     $table_data .= $this->view_client_line($client);

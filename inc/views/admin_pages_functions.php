@@ -57,7 +57,7 @@ function wes_products()
 function wes_settings()
 {
     $required_plugins = array(
-        'woocommerce-gateway-paypal-express-checkout' => 'WC_Gateway_PPEC_Plugin',
+        //'woocommerce-gateway-paypal-express-checkout' => 'WC_Gateway_PPEC_Plugin',
         'woocommerce-wholesale-prices' => 'WooCommerceWholeSalePrices'
     );
 
