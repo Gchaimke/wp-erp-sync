@@ -5,6 +5,7 @@ use WpErpSync\ParseXml;
 use WpErpSync\WesProduct;
 use WpErpSync\Clients;
 use WpErpSync\Google_Helper;
+use WpErpSync\Helper;
 use WpErpSync\Logger;
 
 function wes_dashboard()
@@ -111,7 +112,6 @@ function wes_logs()
 {
     $logs = Logger::getFileList();
     $i = 0;
-    $view_log = '';
     $view_log_list = '<select name="logs" id="select_logs" onchange="view_selected_log()">';
     foreach ($logs as $log) {
         $log_name_array = explode('/', $log);
@@ -119,21 +119,18 @@ function wes_logs()
         $log_date = substr($log_name, 0, -4);
         $view_log_list .= "<option value='$log_date'>$log_date</option>";
         $i++;
-        if ($i > 10) {
-            break;
-        }
+        if ($i > 10) break;
     }
     $view_log_list .= '</select>';
     if (isset($_GET['log'])) {
-        $view_log = Logger::getlogContent($_GET['log']);
+        $view_log = Logger::getlogContent(date('d-m-Y', strtotime( $_GET['log'])));
     } else {
-        $view_log = Logger::getlogContent(Date('d-m-Y'));
+        $view_log = Logger::getlogContent(date('d-m-Y'));
     }
 
     if (isset($_GET['clear_logs'])) {
         $view_log = Logger::clearLogs();
     }
-
 
     include 'logs.php';
 }

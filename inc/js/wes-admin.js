@@ -62,7 +62,7 @@
         my_ajax('add_all_products', products);
     });
 
-    $('#get_date').on('click', function () {
+    $('#log_date').on('change', function () {
         var date = new Date($('#log_date').val());
         var fdate = format_date(date);
         go_to_log(fdate);

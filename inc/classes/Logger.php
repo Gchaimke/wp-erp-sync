@@ -29,6 +29,7 @@ class Logger
     {
         $dir = self::$log_path;
         $files = glob($dir . "*.log");
+        usort($files, function ($a,$b) {return filemtime($a) - filemtime($b);});
         return array_reverse($files);
     }
 
