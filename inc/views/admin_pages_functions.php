@@ -2,8 +2,8 @@
 
 use WpErpSync\Cron;
 use WpErpSync\ParseXml;
-use WpErpSync\WesProduct;
-use WpErpSync\Clients;
+use WpErpSync\WesProducts;
+use WpErpSync\WesClients;
 use WpErpSync\Google_Helper;
 use WpErpSync\Helper;
 use WpErpSync\Logger;
@@ -36,13 +36,13 @@ function wes_dashboard()
 
 function wes_clients()
 {
-    $clientsCl = new Clients();
+    $clientsCl = new WesClients();
     include 'clients.php';
 }
 
 function wes_products()
 {
-    $product_class = new WesProduct();
+    $product_class = new WesProducts();
     if (isset($_GET['limit'])) {
         if ($_GET['limit'] == 'no') {
             $product_class->set_products_limit(count($product_class->products));

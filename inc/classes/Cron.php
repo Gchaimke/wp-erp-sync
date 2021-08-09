@@ -27,7 +27,7 @@ class Cron
         $sync_status = Cron::wes_sync_files();
         if ($sync_status > 0) {
             //Cron Update products data
-            $product_class = new WesProduct();
+            $product_class = new WesProducts();
             $product_class->update_all_products();
         } else {
             Logger::log_message('No Updates');

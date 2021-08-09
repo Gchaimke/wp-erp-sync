@@ -39,16 +39,18 @@ require BASE_PATH . 'vendor/autoload.php';
 // use the classes namespaces
 use WpErpSync\Shortcodes;
 use WpErpSync\Plugin;
-use WpErpSync\WesProduct;
+use WpErpSync\WesProducts;
+use WpErpSync\WesClients;
 use WpErpSync\Order;
 use WpErpSync\Cron;
 use WpErpSync\Logger;
 
-// instantiate classes
+// instantiate classes for ajax call
 $displayDate = new Shortcodes\Today();
 $plugin    = new Plugin();
 try {
-	$product = new WesProduct();
+	$product = new WesProducts();
+	$client = new WesClients();
 } catch (\Throwable $th) {
 	echo "XML not found";
 }

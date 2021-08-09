@@ -68,6 +68,11 @@
         go_to_log(fdate);
     });
 
+    $('#search_for_client').on('click', function () {
+        $('#admin_message').empty();
+        my_ajax('search_for_client', $("#search_client").val(), true);
+    });
+
 })(jQuery);
 
 function view_selected_log() {

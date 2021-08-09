@@ -2,7 +2,7 @@
 
 namespace WpErpSync;
 
-class Product
+class WesProducts
 {
     private $max_products;
     private $active_products;
@@ -16,7 +16,9 @@ class Product
         } else {
             $this->products = array();
         }
-        $this->set_products_limit(500);
+        $this->set_products_limit(100);
+
+        //before use ajax add calss init to main plugin file!
         add_action('wp_ajax_add_product', [$this, 'add_product']);
         add_action('wp_ajax_search_for_product', [$this, 'search_for_product']);
         add_action('wp_ajax_add_all_products', [$this, 'add_all_products']);
@@ -56,18 +58,22 @@ class Product
 
     public function view_products()
     {
-        $count = 0;
+        $count = 1;
         $active = 0;
-        $table_data = "<table class='widefat striped'>" . $this->view_products_table_head();
+        $table_data = "<table class='widefat striped fixed_head'><thead>" . $this->view_products_table_head()."</thead>";
+        $table_data .="<tbody>";
         if (isset($this->products)) {
             foreach ($this->products as $product) {
-                $table_data .= $this->view_product_line($product, $count);
+                if($product["price"] == "0") continue;
+                if($product["stock"] == "0") continue;
+                $table_data .= $this->view_product_line($product);
                 $active++;
                 $count++;
                 if ($count > $this->get_products_limit())
                     break;
             }
         }
+        $table_data .="</tbody>";
         $table_data .= "</table>";
         $this->set_active_products($active);
         $this->set_counted_products($count);
@@ -80,10 +86,10 @@ class Product
         $table_data = '';
         $count = 0;
         if (strlen($serch_txt) > 2) {
-            $table_data .= "<table id='search_table' class='widefat striped'>" . $this->view_products_table_head();
+            $table_data .= "<table id='search_table' class='widefat striped fixed_head'><thead>" . $this->view_products_table_head()."</thead>";
             foreach ($this->products as $product) {
                 if ((stripos($product['name'], $serch_txt) !== false || stripos($product['SKU'], $serch_txt) !== false)) {
-                    $table_data .= $this->view_product_line($product, $count);
+                    $table_data .= $this->view_product_line($product);
                     $count++;
                 }
             }
@@ -100,24 +106,21 @@ class Product
 
     function view_products_table_head()
     {
-        return "<tr><th>ID</th>
+        return "<tr>
                 <th>SKU</th>
                 <th>name</th>
-                <th>price</th>
-                <th>wholesale price</th>
+                <th>price / wholesale price</th>
                 <th>stock</th>
                 <th>add</th></tr>";
     }
 
-    function view_product_line($product, $count)
+    function view_product_line($product)
     {
         $product_line = "<tr class='product'>
-        <td data-column='num'>{$count}</td>
         <td data-column='SKU'>{$product['SKU']}</td>
         <td data-column='name'>{$product['name']}</td>
-        <td data-column='price'>{$product['price']}</td>
-        <td data-column='wholesale_price'>{$product['wholesale_price']}</td>
-        <td data-column='stock'>{$product['stock']}</td>
+        <td data-column='price'>".Helper::num_format($product['price'],2)." / ".Helper::num_format($product['wholesale_price'],2)."</td>
+        <td data-column='stock'>".Helper::num_format($product['stock'])."</td>
         <td><button class='button action'>Add</button></td></tr>";
         return $product_line;
     }
@@ -179,6 +182,8 @@ class Product
             $products = $this->products;
         }
         foreach ($products as $product) {
+            if($product["price"] == "0") continue;
+            if($product["stock"] == "0") continue;
             $this->add_one_product($product);
             $count++;
             if ($count > $this->get_products_limit())
@@ -212,8 +217,8 @@ class Product
             }
             $count++;
         }
-        $msg = ' - ' . $success . ' products updated!';
-        echo ($msg);
+        $msg = "Total: $count, Updated: $success ";
+        echo $msg;
         Logger::log_message($msg);
     }
 

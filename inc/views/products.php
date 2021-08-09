@@ -1,10 +1,10 @@
 <h1>XML Products</h1>
 <div class="form_control">
-    <label class="label">Update all existing WP products from XML</label>
+    <label class="label">Add all products on this page from XML to WP</label>
     <div class='add_all_product_button button action'>Add All</div>
 </div>
 <div class="form_control">
-    <label class="label">Add all products on this page from XML to WP</label>
+    <label class="label">Update all existing WP products from XML</label>
     <div class='update_all_products_button button action'>Update All</div>
 </div>
 <div class="form_control">
