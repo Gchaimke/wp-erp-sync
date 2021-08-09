@@ -15,12 +15,12 @@ class WesClients
 
     public function get_clients($filter = 0)
     {
-        $filtered_clients = array();
-        $users_meta = $this->get_wp_users_meta();
         $data = new ParseXml();
         $clients = $data->get_clients_data();
         if ($clients) {
-            $this->clients = $clients['clients'];
+            $clients = $data->get_clients_data()['clients'];
+            $filtered_clients = array();
+            $users_meta = $this->get_wp_users_meta();
             if ($filter == 1) { //resselers
                 foreach ($clients as $client) {
                     if ($this->isResseller($client)) {
@@ -41,8 +41,8 @@ class WesClients
                 $this->clientsCount = count($filtered_clients);
                 return $filtered_clients;
             }
-        } else {
-            $this->clients = array();
+        }else{
+            return array();
         }
     }
 
@@ -68,10 +68,8 @@ class WesClients
     public function buildClientsTable($clients)
     {
         $table_data = "<table class='widefat striped fixed_head'>" . $this->view_clients_table_head();
-        if (is_array($clients)) {
-            foreach ($clients as $client) {
-                $table_data .= $this->view_client_line($client);
-            }
+        foreach ($clients as $client) {
+            $table_data .= $this->view_client_line($client);
         }
 
         $table_data .= " </table>";

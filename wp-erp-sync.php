@@ -4,7 +4,7 @@
  * Plugin Name: Wordpress ERP Sync
  * Plugin URI: http://gchaim.com/wp-erp-sync
  * Description: Sync your ERP products with wordpress wocommerce. To connect to google drive
- * Version: 0.1.3
+ * Version: 0.2.1
  * Author: Chaim Gorbov
  * Author URI: http://gchaim.com
  * License: GPL2
@@ -12,7 +12,7 @@
 if (!defined('WPINC')) {
 	die;
 }
-$version = '0.2.0';
+$version = '0.2.1';
 //sync timezone with wordpress
 date_default_timezone_set(get_option('timezone_string'));
 define('GDATA_FOLDER', plugin_dir_path(__FILE__) . 'inc/gdrive_data/');

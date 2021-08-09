@@ -10,10 +10,10 @@ class WesProducts
     public function __construct()
     {
         $data = new ParseXml();
-        $get_data = $data->get_products_data();
-        if ($get_data) {
-            $this->products = $get_data['products'];
-        } else {
+        $products = $data->get_products_data();
+        if($products){
+            $this->products = $products['products'];
+        }else{
             $this->products = array();
         }
         $this->set_products_limit(100);
