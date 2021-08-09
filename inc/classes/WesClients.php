@@ -78,10 +78,8 @@ class WesClients
             <th>ERP Number</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Cellular</th>
-            <th>Phone</th>
-            <th>Street</th>
-            <th>City</th>
+            <th>Cellular / Phone</th>
+            <th>Street / City</th>
             <th>Reseller</th>
             <th>Wp User</th>
         </tr></thead>";
@@ -97,10 +95,8 @@ class WesClients
                 <td class='client_number'>{$client['number']}</td>
                 <td class='client_name'>{$client['name']}</td>
                 <td class='client_email'>{$client['Email']}</td>
-                <td class='client_cellular'>{$client['Cellular']}</td>
-                <td class='client_phone'>{$client['Phone1']}</td>
-                <td class='client_street'>{$client['street']}</td>
-                <td class='client_city'>{$client['city']}</td>
+                <td class='client_cellular'>{$client['Cellular']} | {$client['Phone1']}</td>
+                <td class='client_street'>{$client['street']} {$client['city']}</td>
                 <td class='client_exists'>$reseler</td>
                 <td class='client_exists'>$exists</td></tr>";
         return $table_data;
