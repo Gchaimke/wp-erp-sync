@@ -52,7 +52,7 @@ try {
 	$product = new WesProducts();
 	$client = new WesClients();
 } catch (\Throwable $th) {
-	echo "XML not found";
+	echo "Error get product or client class from plugin init";
 }
 
 $order = new Order();
@@ -103,6 +103,14 @@ function wes_deactivate()
 	Cron::remove_cron('wes_erp_sync_data');
 	Logger::log_message("Plugin erp deactivated");
 }
+
+
+// Hijack the option, the role will follow!
+add_filter('pre_option_default_role', function($default_role){
+    // You can also add conditional tags here and return whatever
+    return 'customer'; // This is changed
+    return $default_role; // This allows default
+});
 
 //Add ERP number to user profile
 add_action('show_user_profile', 'extra_user_profile_fields');

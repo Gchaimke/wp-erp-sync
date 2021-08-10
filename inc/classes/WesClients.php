@@ -7,10 +7,9 @@ class WesClients
     public $clientsCount, $clients;
     public function __construct()
     {
-        $this->clinets = $this->get_clients();
-
         //before use ajax add calss init to main plugin file!
         add_action('wp_ajax_search_for_client', [$this, 'search_for_client']);
+        add_action('wp_ajax_add_update_user', [$this, 'add_update_user']);
     }
 
     public function get_clients($filter = 0)
@@ -18,9 +17,8 @@ class WesClients
         $data = new ParseXml();
         $clients = $data->get_clients_data();
         if ($clients) {
-            $clients = $data->get_clients_data()['clients'];
+            $clients = $clients['clients'];
             $filtered_clients = array();
-            $users_meta = $this->get_wp_users_meta();
             if ($filter == 1) { //resselers
                 foreach ($clients as $client) {
                     if ($this->isResseller($client)) {
@@ -34,40 +32,21 @@ class WesClients
                 return $clients;
             } else { //wp users
                 foreach ($clients as $client) {
-                    if ($this->isWpUser($client, $users_meta)) {
+                    if (email_exists($client["Email"])) {
                         array_push($filtered_clients, $client);
                     }
                 }
                 $this->clientsCount = count($filtered_clients);
                 return $filtered_clients;
             }
-        }else{
+        } else {
             return array();
         }
     }
 
-    public function get_wp_users_meta()
-    {
-        $all_users = get_users();
-        $users_meta = array();
-        foreach ($all_users as $user) {
-            $meta = get_user_meta($user->ID);
-            if (is_array($meta)  && array_key_exists("billing_email", $meta) && $meta['billing_email'][0] != 0) {
-                array_push($users_meta, $meta['billing_email'][0]);
-            }
-            if (is_array($meta) && array_key_exists("billing_phone", $meta) && $meta['billing_phone'][0] != 0) {
-                array_push($users_meta, $meta['billing_phone'][0]);
-            }
-            if (is_array($meta) && array_key_exists("billing_address_1", $meta) && $meta['billing_address_1'][0] != 0) {
-                array_push($users_meta, $meta['billing_address_1'][0]);
-            }
-        }
-        return $users_meta;
-    }
-
     public function buildClientsTable($clients)
     {
-        $table_data = "<table class='widefat striped fixed_head'>" . $this->view_clients_table_head();
+        $table_data = "<table id='clients_table' class='widefat striped fixed_head'>" . $this->view_clients_table_head();
         foreach ($clients as $client) {
             $table_data .= $this->view_client_line($client);
         }
@@ -83,40 +62,54 @@ class WesClients
             <th>ERP Number</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Cellular / Phone</th>
-            <th>Street / City</th>
+            <th>Phone</th>
+            <th>Cellular</th>
+            <th>Street</th>
+            <th>City</th>
+            <th>Zip</th>
             <th>Reseller</th>
             <th>Wp User</th>
+            <th>Add / Update</th>
         </tr></thead>";
         return $html;
     }
 
     public function view_client_line($client)
     {
-        $table_data = "";
-        $reseler = $this->isResseller($client) ? '<b style="color:green">yes</b>' : '<b style="color:red">no</b>';
-        $exists = $this->isWpUser($client, $this->get_wp_users_meta()) ? '<b style="color:green">yes</b>' : '<b style="color:red">no</b>';
-        $table_data .= "<tr class='client'>
-                <td class='client_number'>{$client['number']}</td>
-                <td class='client_name'>{$client['name']}</td>
-                <td class='client_email'>{$client['Email']}</td>
-                <td class='client_cellular'>{$client['Cellular']} | {$client['Phone1']}</td>
-                <td class='client_street'>{$client['street']} {$client['city']}</td>
-                <td class='client_exists'>$reseler</td>
-                <td class='client_exists'>$exists</td></tr>";
-        return $table_data;
-    }
-
-    public function isWpUser($client, $users_meta)
-    {
-        if (in_array($client['Email'], $users_meta)) {
-            return true;
-        } else if (in_array($client['Cellular'], $users_meta)) {
-            return true;
-        } else if (in_array($client['Phone1'], $users_meta)) {
-            return true;
+        if ($this->isResseller($client)) {
+            $reseller = 'yes';
+            $reseller_style = 'color:green';
+        } else {
+            $reseller = 'no';
+            $reseller_style = 'color:red';
         }
-        return false;
+
+        if (email_exists($client["Email"])) {
+            $exists = 'yes';
+            $exists_style = 'color:green';
+        } else {
+            $exists = 'no';
+            $exists_style = 'color:red';
+        }
+
+        $table_data = "<tr class='client' id='{$client['number']}'>
+                <td data-column='erp_num'>{$client['number']}</td>
+                <td data-column='name'>{$client['name']}</td>
+                <td data-column='email'>{$client['Email']}</td>
+                <td data-column='phone'>{$client['Phone1']}</td>
+                <td data-column='cellular'>{$client['Cellular']}</td>
+                <td data-column='street'>{$client['street']} </td>
+                <td data-column='city'>{$client['city']}</td>
+                <td data-column='zip'>{$client['zip']} </td>
+                <td data-column='reseller' style='$reseller_style'>$reseller</td>
+                <td class='client_exists' style='$exists_style'>$exists</td>";
+        if ($exists == 'no') {
+            $table_data .= "<td><button class='button action'>add</button></td>";
+        } else {
+            $table_data .= "<td><button class='button action'>update</button></td>";
+        }
+        $table_data .= "</tr>";
+        return $table_data;
     }
 
     public function isResseller($client)
@@ -157,5 +150,74 @@ class WesClients
         }
         echo $table_data;
         wp_die();
+    }
+
+    function add_update_user()
+    {
+        $user = $_POST['data'];
+        $user["password"] = "W1418es!";
+        if ($user["email"] != "") {
+            if (!username_exists($user["email"]) && !email_exists($user["email"])) {
+                $user['id'] = wp_create_user($user["email"], $user["password"], $user["email"]);
+                if ($user['id'] > 1) {
+                    $this->set_user_data($user);
+                }
+                echo "New user created! username: {$user["name"]} and email: {$user["email"]}";
+                die;
+            } else {
+                $user['id'] = username_exists($user["email"]);
+                $user_email = explode("@", $user["email"]);
+                if (strtolower($user_email[1]) == "avdor.com" &&  get_user_meta($user['id'], 'erp_num', true) != $user["erp_num"]) {
+                    $user['id'] = wp_create_user("user_" . $user["erp_num"], $user["password"], $user["erp_num"] . "@avdor.com");
+                    if ($user['id'] > 1) {
+                        $this->set_user_data($user);
+                    }
+                    echo "New user created! username: {$user["erp_num"]}";
+                    die;
+                }
+
+                if (
+                    get_user_meta($user['id'], 'billing_address_1', true) != $user["street"] ||
+                    get_user_meta($user['id'], 'billing_address_2', true) != $user["phone"] ||
+                    get_user_meta($user['id'], 'billing_city', true) != $user["city"] ||
+                    get_user_meta($user['id'], 'billing_phone', true) != $user["cellular"]
+                ) {
+                    if ($user['id'] > 1) {
+                        $this->set_user_data($user);
+                    }
+                    echo "User with username:{$user["name"]} and email:{$user["email"]} updated. ";
+                    die;
+                } else {
+                    echo "This user up to date!";
+                    die;
+                }
+            }
+        }
+        echo "Can't add user without email!";
+        die;
+    }
+
+    function set_user_data($user)
+    {
+        $user_id = $user['id'];
+        if ($user_id) {
+            wp_update_user(
+                array(
+                    'ID'       => $user_id,
+                    'first_name'    => $user["name"],
+                    'nickname' => $user["name"],
+                    'display_name' => $user["name"],
+                    'role' => $user["reseller"] == "yes" ? "wholesale_customer" : "customer"
+                )
+            );
+            update_user_meta($user_id, 'billing_address_1', $user["street"]);
+            update_user_meta($user_id, 'billing_address_2', $user["phone"]);
+            update_user_meta($user_id, 'billing_city', $user["city"]);
+            update_user_meta($user_id, 'billing_country', "IL");
+            update_user_meta($user_id, 'billing_postcode', $user["zip"]);
+            update_user_meta($user_id, 'billing_phone', $user["cellular"]);
+            update_user_meta($user_id, 'erp_num', $user["erp_num"]);
+            //wp_mail( $user["name"], 'Welcome!', "Your username:{$user["email"]} and password is: {$user["password"]}");
+        }
     }
 }

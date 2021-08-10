@@ -27,3 +27,7 @@
     z-index: 1;
     background: #e6e6e7;
 }
+
+.fixed_head {
+    font-weight: 700;
+  }

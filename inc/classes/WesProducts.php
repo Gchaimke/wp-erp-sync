@@ -60,7 +60,7 @@ class WesProducts
     {
         $count = 1;
         $active = 0;
-        $table_data = "<table class='widefat striped fixed_head'><thead>" . $this->view_products_table_head()."</thead>";
+        $table_data = "<table id='products_table' class='widefat striped fixed_head'><thead>" . $this->view_products_table_head()."</thead>";
         $table_data .="<tbody>";
         if (isset($this->products)) {
             foreach ($this->products as $product) {

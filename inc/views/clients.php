@@ -7,7 +7,11 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
 <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
 <div class="form_control">
     <label class="label">TODO: Update all existing WP clients from XML</label>
-    <div class='update_all_clients_button button action'>Update All</div>
+    <div id='update_all_clients_button' class='button action'>Update All</div>
+</div>
+<div class="form_control">
+    <label class="label">Add User</label>
+    <div id="add_user" class='button action'>Add</div>
 </div>
 <div class="form_control">
     <label class="label">Search XML clients by email, name, phone, erp number</label>

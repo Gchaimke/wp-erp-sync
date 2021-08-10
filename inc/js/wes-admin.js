@@ -21,14 +21,7 @@
         });
     }
 
-    $('div#wpbody-content').on('click', 'button', function () {
-        var row = $(this).closest('tr');
-        var columns = row.find('td');
-        var product_values = build_product_array(columns);
-        my_ajax('add_product', product_values);
-    });
-
-    function build_product_array(columns) {
+    function build_row_array(columns) {
         var product_values = {};
         $.each(columns, function (i, item) {
             if (typeof item.dataset.column !== 'undefined') {
@@ -37,6 +30,15 @@
         });
         return product_values;
     }
+
+    $('table#products_table').on('click', 'button', function () {
+        var row = $(this).closest('tr');
+        var columns = row.find('td');
+        var product_values = build_row_array(columns);
+        my_ajax('add_product', product_values);
+    });
+
+
 
     $('.add_all_product_button').on('click', function () {
         my_ajax('add_all_products');
@@ -56,7 +58,7 @@
         var products = [];
         $('#search_table > tbody  > tr').each(function () {
             var columns = $(this).find('td');
-            var product_values = build_product_array(columns);
+            var product_values = build_row_array(columns);
             products.push(product_values);
         });
         my_ajax('add_all_products', products);
@@ -71,6 +73,14 @@
     $('#search_for_client').on('click', function () {
         $('#admin_message').empty();
         my_ajax('search_for_client', $("#search_client").val(), true);
+    });
+
+    $('table#clients_table').on('click', 'button', function () {
+        var row = $(this).closest('tr');
+        var columns = row.find('td');
+        var user_data = build_row_array(columns);
+        $('#admin_message').empty();
+        my_ajax('add_update_user', user_data);
     });
 
 })(jQuery);
