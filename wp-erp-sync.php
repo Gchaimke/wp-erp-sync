@@ -4,7 +4,7 @@
  * Plugin Name: Wordpress ERP Sync
  * Plugin URI: http://gchaim.com/wp-erp-sync
  * Description: Sync your ERP products with wordpress wocommerce. To connect to google drive
- * Version: 0.2.1
+ * Version: 1.0.1
  * Author: Chaim Gorbov
  * Author URI: http://gchaim.com
  * License: GPL2
@@ -12,7 +12,7 @@
 if (!defined('WPINC')) {
 	die;
 }
-$version = '0.2.1';
+$version = '1.0.1';
 //sync timezone with wordpress
 date_default_timezone_set(get_option('timezone_string'));
 define('GDATA_FOLDER', plugin_dir_path(__FILE__) . 'inc/gdrive_data/');
@@ -44,6 +44,7 @@ use WpErpSync\WesClients;
 use WpErpSync\Order;
 use WpErpSync\Cron;
 use WpErpSync\Logger;
+use WpErpSync\WesDashboard;
 
 // instantiate classes for ajax call
 $displayDate = new Shortcodes\Today();
@@ -104,13 +105,13 @@ function wes_deactivate()
 	Logger::log_message("Plugin erp deactivated");
 }
 
+function wes_add_dashboard_widget()
+{
+	new WesDashboard();
+}
 
-// Hijack the option, the role will follow!
-add_filter('pre_option_default_role', function($default_role){
-    // You can also add conditional tags here and return whatever
-    return 'customer'; // This is changed
-    return $default_role; // This allows default
-});
+add_action('wp_dashboard_setup', 'wes_add_dashboard_widget');
+
 
 //Add ERP number to user profile
 add_action('show_user_profile', 'extra_user_profile_fields');
@@ -177,9 +178,9 @@ function wes_minimum_order_amount()
 			$msg = 'Your current order total is %s — you must have an order with a minimum of %s to place your order ';
 		}
 		if (is_cart()) {
-			wc_print_notice(sprintf($msg,wc_price(WC()->cart->total),wc_price(MIN_ORDER)),'error');
+			wc_print_notice(sprintf($msg, wc_price(WC()->cart->total), wc_price(MIN_ORDER)), 'error');
 		} else {
-			wc_add_notice(sprintf($msg." !",wc_price(WC()->cart->total),wc_price(MIN_ORDER)),'error');
+			wc_add_notice(sprintf($msg . " !", wc_price(WC()->cart->total), wc_price(MIN_ORDER)), 'error');
 		}
 		echo "<script>
 		(function ($) {
@@ -225,21 +226,23 @@ function wes_product_query($q)
 }
 
 //remove add to cart button if price is 0
-function wes_remove_add_to_cart_on_0 ( $purchasable, $product ){
-	if( $product->get_price() == 0 )
+function wes_remove_add_to_cart_on_0($purchasable, $product)
+{
+	if ($product->get_price() == 0)
 		$purchasable = false;
 	return $purchasable;
 }
-add_filter( 'woocommerce_is_purchasable', 'wes_remove_add_to_cart_on_0', 10, 2 );
+add_filter('woocommerce_is_purchasable', 'wes_remove_add_to_cart_on_0', 10, 2);
 
 //change 0.00 price to text
-add_filter( 'woocommerce_get_price_html','maybe_hide_price',10,2);
-function maybe_hide_price($price_html, $product){
-     if($product->get_price()>0){
-          return $price_html;
-     }
-     return 'For Order please call: 074-7155000';
- }
+add_filter('woocommerce_get_price_html', 'maybe_hide_price', 10, 2);
+function maybe_hide_price($price_html, $product)
+{
+	if ($product->get_price() > 0) {
+		return $price_html;
+	}
+	return 'For Order please call: 074-7155000';
+}
 
 //disable add to cart
 //add_filter( 'woocommerce_is_purchasable', '__return_false');
@@ -249,7 +252,8 @@ function maybe_hide_price($price_html, $product){
 //add_filter( 'woocommerce_get_price_including_tax', 'round_price_product', 10, 1 );
 //add_filter( 'woocommerce_tax_round', 'round_price_product', 10, 1);
 
-function round_price_product( $price ){
-    // Return rounded price
-    return ceil( $price ); 
+function round_price_product($price)
+{
+	// Return rounded price
+	return ceil($price);
 }

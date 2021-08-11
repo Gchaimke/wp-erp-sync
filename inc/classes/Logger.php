@@ -4,30 +4,30 @@ namespace WpErpSync;
 
 class Logger
 {
-    public static $log_path = BASE_PATH . 'logs/';
+    public static $log_dir = BASE_PATH . 'logs/';
     public function __construct()
     {
     }
 
     static function log_message($msg = '', $kind = 0)
     {
-        $logPath =  self::$log_path . date('d-m-Y') . '.log';
+        $log_file_path =  self::$log_dir . date('d-m-Y') . '.log';
         $kind_str = '[info]';
         if ($kind == 1) {
             $kind_str = '[error]';
         }
         $time = date('d-m-Y H:i:s');
 
-        if (!file_exists(BASE_PATH . 'logs')) {
-            mkdir(BASE_PATH . 'logs', 0700);
-            file_put_contents(BASE_PATH . 'logs/index.php', "<?php // Silence is golden.");
+        if (!file_exists(self::$log_dir)) {
+            mkdir(self::$log_dir, 0700);
+            file_put_contents(self::$log_dir . 'index.php', "<?php // Silence is golden.");
         }
-        file_put_contents($logPath, $time . ' ' . $kind_str . ' ' . $msg . PHP_EOL, FILE_APPEND);
+        file_put_contents($log_file_path, $time . ' ' . $kind_str . ' ' . $msg . PHP_EOL, FILE_APPEND);
     }
 
     static function getFileList()
     {
-        $dir = self::$log_path;
+        $dir = self::$log_dir;
         $files = glob($dir . "*.log");
         usort($files, function ($a,$b) {return filemtime($a) - filemtime($b);});
         return array_reverse($files);
@@ -35,10 +35,10 @@ class Logger
 
     static function getlogContent($log_date)
     {
-        $dir = self::$log_path;
-        $log_path = $dir . $log_date . ".log";
-        if (file_exists($log_path)) {
-            $log = file_get_contents($log_path);
+        $dir = self::$log_dir;
+        $log_file_path = $dir . $log_date . ".log";
+        if (file_exists($log_file_path)) {
+            $log = file_get_contents($log_file_path);
             return $log;
         }
 
@@ -47,7 +47,7 @@ class Logger
 
     static function clearLogs()
     {
-        $dir = self::$log_path;
+        $dir = self::$log_dir;
         $files = glob($dir . "*.log");
         foreach ($files as $file) { // iterate files
             $log = explode('/', $file);
