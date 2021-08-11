@@ -32,7 +32,7 @@ class WesClients
                 return $clients;
             } else { //wp users
                 foreach ($clients as $client) {
-                    if (email_exists($client["Email"])) {
+                    if ($this->isWpUser($client)) {
                         array_push($filtered_clients, $client);
                     }
                 }
@@ -46,7 +46,7 @@ class WesClients
 
     public function buildClientsTable($clients)
     {
-        $table_data = "<table id='clients_table' class='widefat striped fixed_head'>" . $this->view_clients_table_head();
+        $table_data = "<table class='widefat striped fixed_head clients_table'>" . $this->view_clients_table_head();
         foreach ($clients as $client) {
             $table_data .= $this->view_client_line($client);
         }
@@ -61,7 +61,7 @@ class WesClients
         <tr>
             <th>ERP Number</th>
             <th>Name</th>
-            <th>Email</th>
+            <th>email</th>
             <th>Phone</th>
             <th>Cellular</th>
             <th>Street</th>
@@ -84,7 +84,7 @@ class WesClients
             $reseller_style = 'color:red';
         }
 
-        if (email_exists($client["Email"])) {
+        if ($this->isWpUser($client)) {
             $exists = 'yes';
             $exists_style = 'color:green';
         } else {
@@ -92,10 +92,10 @@ class WesClients
             $exists_style = 'color:red';
         }
 
-        $table_data = "<tr class='client' id='{$client['number']}'>
-                <td data-column='erp_num'>{$client['number']}</td>
+        $table_data = "<tr class='client' id='{$client['erp_num']}'>
+                <td data-column='erp_num'>{$client['erp_num']}</td>
                 <td data-column='name'>{$client['name']}</td>
-                <td data-column='email'>{$client['Email']}</td>
+                <td data-column='email'>{$client['email']}</td>
                 <td data-column='phone'>{$client['Phone1']}</td>
                 <td data-column='cellular'>{$client['Cellular']}</td>
                 <td data-column='street'>{$client['street']} </td>
@@ -110,6 +110,22 @@ class WesClients
         }
         $table_data .= "</tr>";
         return $table_data;
+    }
+
+    function isWpUser($client)
+    {
+        if (isset($client["email"]) && $client["email"] != "") {
+            $email_domain = explode("@", $client["email"]);
+            if (count($email_domain) > 1) {
+                $erp_email = $client["erp_num"] . "@" . strtolower($email_domain[1]);
+                if (strtolower($email_domain[1]) == "avdor.com") {
+                    if (email_exists($erp_email) && username_exists("user_" . $client["erp_num"])) return true;
+                } else {
+                    if (email_exists($client["email"]) && username_exists($client["email"])) return true;
+                }
+            }
+        }
+        return false;
     }
 
     public function isResseller($client)
@@ -127,14 +143,14 @@ class WesClients
         $count = 0;
         $clients = $this->get_clients(2);
         if (strlen($serch_txt) > 2) {
-            $table_data .= "<table id='search_table' class='widefat striped fixed_head'>" . $this->view_clients_table_head();
+            $table_data .= "<table class='widefat striped fixed_head clients_table'>" . $this->view_clients_table_head();
             foreach ($clients as $client) {
                 if (
                     stripos($client['name'], $serch_txt) !== false ||
-                    stripos($client['Email'], $serch_txt) !== false ||
+                    stripos($client['email'], $serch_txt) !== false ||
                     stripos($client['Phone1'], $serch_txt) !== false ||
                     stripos($client['Cellular'], $serch_txt) !== false ||
-                    stripos($client['number'], $serch_txt) !== false
+                    stripos($client['erp_num'], $serch_txt) !== false
                 ) {
                     $table_data .= $this->view_client_line($client);
                     $count++;
@@ -157,25 +173,25 @@ class WesClients
         $user = $_POST['data'];
         $user["password"] = "W1418es!";
         if ($user["email"] != "") {
-            if (!username_exists($user["email"]) && !email_exists($user["email"])) {
-                $user['id'] = wp_create_user($user["email"], $user["password"], $user["email"]);
-                if ($user['id'] > 1) {
-                    $this->set_user_data($user);
-                }
-                echo "New user created! username: {$user["name"]} and email: {$user["email"]}";
-                die;
-            } else {
-                $user['id'] = username_exists($user["email"]);
+            if (!$this->isWpUser($user)) {
                 $user_email = explode("@", $user["email"]);
-                if (strtolower($user_email[1]) == "avdor.com" &&  get_user_meta($user['id'], 'erp_num', true) != $user["erp_num"]) {
+                if (count($user_email) > 1 && strtolower($user_email[1]) == "avdor.com") {
                     $user['id'] = wp_create_user("user_" . $user["erp_num"], $user["password"], $user["erp_num"] . "@avdor.com");
                     if ($user['id'] > 1) {
                         $this->set_user_data($user);
                     }
                     echo "New user created! username: {$user["erp_num"]}";
                     die;
+                } else {
+                    $user['id'] = wp_create_user($user["email"], $user["password"], $user["email"]);
+                    if ($user['id'] > 1) {
+                        $this->set_user_data($user);
+                    }
+                    echo "New user created! username: {$user["name"]} and email: {$user["email"]}";
+                    die;
                 }
-
+            } else {
+                $user['id'] = username_exists($user["email"]);
                 if (
                     get_user_meta($user['id'], 'billing_address_1', true) != $user["street"] ||
                     get_user_meta($user['id'], 'billing_address_2', true) != $user["phone"] ||
