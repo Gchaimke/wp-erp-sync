@@ -4,9 +4,10 @@ namespace WpErpSync;
 
 class WesClients
 {
-    public $clientsCount, $clients;
+    public $clientsCount, $clients, $nuser_pass;
     public function __construct()
     {
+        $this->nuser_pass = "W1418es!";
         //before use ajax add calss init to main plugin file!
         add_action('wp_ajax_search_for_client', [$this, 'search_for_client']);
         add_action('wp_ajax_add_update_user', [$this, 'add_update_user']);
@@ -171,7 +172,7 @@ class WesClients
     function add_update_user()
     {
         $user = $_POST['data'];
-        $user["password"] = "W1418es!";
+        $user["password"] = $this->nuser_pass;
         if ($user["email"] != "") {
             if (!$this->isWpUser($user)) {
                 $user_email = explode("@", $user["email"]);

@@ -47,3 +47,4 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
         endswitch; ?>
     </div>
 </div>
+<?=$clientsCl->nuser_pass?>
