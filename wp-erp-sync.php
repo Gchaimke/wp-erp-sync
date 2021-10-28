@@ -67,11 +67,11 @@ $plugin->init();
 function wes_add_admin_pages()
 {
 	require_once plugin_dir_path(__FILE__) . 'inc/views/admin_pages_functions.php';
-	add_menu_page('ERP Dashboard', 'ERP Dashboard', 'edit_pages', 'dashboard', 'wes_dashboard', 'dashicons-businessman', 3);
-	add_submenu_page('dashboard', 'Clients', "Clients", 'edit_pages', 'wesClients', 'wes_clients');
-	add_submenu_page('dashboard', "Products", "Products", 'edit_pages', 'wesProducts', 'wes_products');
-	add_submenu_page('dashboard', "Settings", "Settings", 'edit_pages', 'wesSettings', 'wes_settings');
-	add_submenu_page('dashboard', "Logs", "Logs", 'edit_pages', 'wesLogs', 'wes_logs');
+	add_menu_page('ERP Dashboard', 'ERP Dashboard', 'edit_pages', 'wes_dashboard', 'wes_dashboard', 'dashicons-businessman', 3);
+	add_submenu_page('wes_dashboard', 'Clients', "Clients", 'edit_pages', 'wesClients', 'wes_clients');
+	add_submenu_page('wes_dashboard', "Products", "Products", 'edit_pages', 'wesProducts', 'wes_products');
+	add_submenu_page('wes_dashboard', "Settings", "Settings", 'edit_pages', 'wesSettings', 'wes_settings');
+	add_submenu_page('wes_dashboard', "Logs", "Logs", 'edit_pages', 'wesLogs', 'wes_logs');
 }
 
 add_action('admin_menu', 'wes_add_admin_pages');
